@@ -1,0 +1,247 @@
+{% extends 'base_minimal.html.twig' %}
+
+{% block title %}Connexion - Bibliothèque{% endblock %}
+
+{% block body %}
+<style>
+    .login-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+        padding: 20px;
+    }
+    
+    .login-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+        max-width: 450px;
+        width: 100%;
+    }
+    
+    .login-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px 30px;
+        text-align: center;
+    }
+    
+    .login-header h1 {
+        font-size: 28px;
+        margin: 0 0 10px 0;
+        font-weight: 700;
+    }
+    
+    .login-header p {
+        margin: 0;
+        opacity: 0.9;
+        font-size: 14px;
+    }
+    
+    .login-icon {
+        font-size: 48px;
+        margin-bottom: 15px;
+    }
+    
+    .login-body {
+        padding: 40px 30px;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+        font-size: 14px;
+    }
+    
+    .form-group input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+    
+    .form-group input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .form-group input::placeholder {
+        color: #999;
+    }
+    
+    .login-btn {
+        width: 100%;
+        padding: 12px 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+    }
+    
+    .login-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+    }
+    
+    .login-btn:active {
+        transform: translateY(0);
+    }
+    
+    .alert {
+        padding: 12px 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border-left: 4px solid #dc3545;
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+    
+    .alert-title {
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+    
+    .login-footer {
+        padding: 20px 30px;
+        background-color: #f8f9fa;
+        border-top: 1px solid #e0e0e0;
+        text-align: center;
+    }
+    
+    .login-footer p {
+        margin: 0;
+        font-size: 14px;
+        color: #666;
+    }
+    
+    .login-footer a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+    }
+    
+    .login-footer a:hover {
+        text-decoration: underline;
+    }
+    
+    .user-info {
+        background-color: #d4edda;
+        border: 1px solid #c3e6cb;
+        border-radius: 8px;
+        padding: 12px 15px;
+        margin-bottom: 20px;
+        color: #155724;
+        font-size: 14px;
+    }
+    
+    .user-info strong {
+        color: #0c5460;
+    }
+    
+    .remember-me {
+        display: flex;
+        align-items: center;
+        margin: 15px 0;
+    }
+    
+    .remember-me input {
+        width: auto;
+        margin-right: 8px;
+    }
+    
+    .remember-me label {
+        margin-bottom: 0;
+        font-weight: 400;
+    }
+</style>
+
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <div class="login-icon">
+                <i class="fas fa-book"></i>
+            </div>
+            <h1>Connexion</h1>
+            <p>Accédez à votre espace personnel</p>
+        </div>
+        
+        <div class="login-body">
+            {% if error %}
+                <div class="alert">
+                    <div class="alert-title">Erreur de connexion</div>
+                    {{ error.messageKey|trans(error.messageData, 'security') }}
+                </div>
+            {% endif %}
+
+            {% if app.user %}
+                <div class="user-info">
+                    <i class="fas fa-check-circle"></i>
+                    Vous êtes connecté en tant que <strong>{{ app.user.userIdentifier }}</strong>
+                    <br>
+                    <a href="{{ path('app_logout') }}" style="color: #0c5460; margin-top: 8px; display: inline-block;">
+                        <i class="fas fa-sign-out-alt"></i> Se déconnecter
+                    </a>
+                </div>
+            {% else %}
+                <form method="post">
+                    <div class="form-group">
+                        <label for="username">
+                            <i class="fas fa-envelope"></i> Email
+                        </label>
+                        <input 
+                            type="email" 
+                            value="{{ last_username }}" 
+                            name="_username" 
+                            id="username" 
+                            placeholder="votre.email@exemple.com"
+                            autocomplete="email" 
+                            required 
+                            autofocus>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">
+                            <i class="fas fa-lock"></i> Mot de passe
+                        </label>
+                        <input 
+                            type="password" 
+                            name="_password" 
+                            id="password" 
+                            placeholder="Entrez votre mot de passe"
+                            autocomplete="current-password" 
+                            required>
+                    </div>
+
+                    <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
+
+                    <button class="login-btn" type="submit">
+                        <i class="fas fa-sign-in-alt"></i> Se connecter
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+        
+        <div class="login-footer">
+            <p>Contacter un administrateur pour créer un compte</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

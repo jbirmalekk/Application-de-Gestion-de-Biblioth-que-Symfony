@@ -1,0 +1,198 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil - Bibliothèque{% endblock %}
+
+{% block body %}
+    <!-- Hero Section -->
+    <section id="blog-hero" class="blog-hero section">
+        <div class="container-fluid p-0" data-aos="fade">
+            <div class="blog-hero-slider swiper init-swiper">
+                <script type="application/json" class="swiper-config">
+                    {
+                        "loop": true,
+                        "speed": 1000,
+                        "effect": "fade",
+                        "autoplay": {
+                            "delay": 5000
+                        },
+                        "slidesPerView": 1,
+                        "navigation": {
+                            "nextEl": ".swiper-button-next",
+                            "prevEl": ".swiper-button-prev"
+                        }
+                    }
+                </script>
+
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                        <div class="blog-hero-item">
+                            <img src="{{ asset('assets/img/blog/blog-hero-1.webp') }}" alt="Bibliothèque moderne" class="img-fluid">
+                            <div class="blog-hero-content">
+                                <span class="category">Bibliothèque</span>
+                                <h1>Bienvenue dans votre gestionnaire de bibliothèque</h1>
+                                <div class="meta">
+                                    <span class="author">Gérez votre collection facilement</span>
+                                </div>
+                                <a href="{{ path('app_livre_index') }}" class="read-more">Voir les livres <i class="bi bi-arrow-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-button-next"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Catégories Section -->
+    <section id="categories" class="categories section light-background">
+        <div class="container section-title" data-aos="fade-up">
+            <span class="description-title">Catégories</span>
+            <h2>Nos Catégories de Livres</h2>
+            <p>Explorez notre collection par catégorie</p>
+        </div>
+
+        <div class="container" data-aos="fade-up" data-aos-delay="100">
+            <div class="row gy-4 justify-content-center">
+                {% for categorie in categories %}
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="category-card text-center">
+                        <div class="category-icon">
+                            <i class="bi bi-bookmark"></i>
+                        </div>
+                        <h4>{{ categorie.designation }}</h4>
+                        <p class="text-muted">Découvrez nos livres dans cette catégorie</p>
+                        <a href="{{ path('app_categorie_show', {'id': categorie.id}) }}" class="btn btn-outline-primary btn-sm">
+                            Voir les livres
+                        </a>
+                    </div>
+                </div>
+                {% else %}
+                <div class="col-12">
+                    <div class="alert alert-info text-center">
+                        <p>Aucune catégorie disponible pour le moment.</p>
+                        <a href="{{ path('app_categorie_new') }}" class="btn btn-primary">Créer une catégorie</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Éditeurs Section -->
+<section id="editeurs" class="editeurs section">
+    <div class="container section-title" data-aos="fade-up">
+        <span class="description-title">Éditeurs</span>
+        <h2>Nos Éditeurs Partenaires</h2>
+        <p>Découvrez les maisons d'édition de notre bibliothèque</p>
+    </div>
+
+    <div class="container" data-aos="fade-up" data-aos-delay="100">
+        <div class="row gy-4">
+            {% for editeur in editeurs %}
+            <div class="col-lg-4 col-md-6">
+                <div class="editeur-card">
+                    <div class="editeur-header">
+                        <h4>{{ editeur.nom }}</h4>
+                        <span class="badge bg-primary">{{ editeur.pays ?? 'International' }}</span>
+                    </div>
+                    <div class="editeur-body">
+                        <p class="editeur-description">
+                            {% if editeur.adresse %}
+                                <i class="bi bi-geo-alt"></i> {{ editeur.adresse }}
+                            {% else %}
+                                Éditeur de qualité
+                            {% endif %}
+                        </p>
+                        <div class="editeur-meta">
+                            {% if editeur.telephone %}
+                                <span><i class="bi bi-telephone"></i> {{ editeur.telephone }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="editeur-footer">
+                        <a href="{{ path('app_editeur_show', {'id': editeur.id}) }}" class="btn-read-more">
+                            <span>Voir les publications</span>
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    <p>Aucun éditeur disponible pour le moment.</p>
+                    <a href="{{ path('app_editeur_new') }}" class="btn btn-primary">Ajouter un éditeur</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+    <!-- Livres Récents Section -->
+    <section id="livres-recents" class="featured-posts section light-background">
+        <div class="container section-title" data-aos="fade-up">
+            <span class="description-title">Nouveautés</span>
+            <h2>Livres Récents</h2>
+            <p>Découvrez nos derniers ajouts</p>
+        </div>
+
+        <div class="container" data-aos="fade-up" data-aos-delay="100">
+            <div class="row gy-4">
+                {% for book in featuredBooks %}
+                <div class="col-md-4">
+                    <article class="blog-card">
+                        <div class="blog-image">
+                            <img src="{{ asset('assets/img/book.jpg') }}" alt="{{ book.titre }}" loading="lazy">
+                            <div class="category-badge">
+                                {% if book.qte > 0 %}
+                                    Disponible ({{ book.qte }})
+                                {% else %}
+                                    Épuisé
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="blog-content">
+                            <div class="author-info">
+                                <img src="{{ asset('assets/img/book1.jpg') }}" alt="Auteur" class="author-avatar">
+                                <div class="author-details">
+                                    <span class="author-name">ISBN: {{ book.isbn }}</span>
+                                    <span class="publish-date">Publié le {{ book.datapub|date('d M, Y') }}</span>
+                                </div>
+                            </div>
+                            <h3>
+                                <a href="{{ path('app_livre_show', {'id': book.id}) }}">
+                                    {{ book.titre }}
+                                </a>
+                            </h3>
+                            <p>
+                                <strong>Prix : {{ book.prix }} €</strong><br>
+                                <strong>Quantité : {{ book.qte }} exemplaire(s)</strong>
+                            </p>
+                            <div class="blog-footer">
+                                <div class="reading-time">
+                                    <i class="bi bi-tag"></i>
+                                    <span>{{ book.prix }} €</span>
+                                </div>
+                                <a href="{{ path('app_livre_show', {'id': book.id}) }}" class="btn-read-more">
+                                    <span>Voir détails</span>
+                                    <i class="bi bi-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+                {% else %}
+                <div class="col-12">
+                    <div class="alert alert-info text-center">
+                        <p>Aucun livre n'est disponible pour le moment.</p>
+                        <a href="{{ path('app_livre_new') }}" class="btn btn-primary">Ajouter le premier livre</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endblock %}

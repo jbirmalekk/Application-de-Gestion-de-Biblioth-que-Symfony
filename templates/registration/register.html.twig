@@ -1,0 +1,303 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription - Bibliothèque{% endblock %}
+
+{% block body %}
+<style>
+    .register-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px;
+    }
+    
+    .register-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+        max-width: 500px;
+        width: 100%;
+    }
+    
+    .register-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px 30px;
+        text-align: center;
+    }
+    
+    .register-header h1 {
+        font-size: 28px;
+        margin: 0 0 10px 0;
+        font-weight: 700;
+    }
+    
+    .register-header p {
+        margin: 0;
+        opacity: 0.9;
+        font-size: 14px;
+    }
+    
+    .register-icon {
+        font-size: 48px;
+        margin-bottom: 15px;
+    }
+    
+    .register-body {
+        padding: 40px 30px;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+        font-size: 14px;
+    }
+    
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .form-group input::placeholder {
+        color: #999;
+    }
+    
+    .form-errors {
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        border-radius: 8px;
+        padding: 12px 15px;
+        margin-bottom: 20px;
+        color: #721c24;
+        font-size: 14px;
+    }
+    
+    .form-errors ul {
+        margin: 0;
+        padding-left: 20px;
+    }
+    
+    .form-errors li {
+        margin: 5px 0;
+    }
+    
+    .checkbox-group {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 20px;
+    }
+    
+    .checkbox-group input {
+        width: auto;
+        margin-right: 10px;
+        margin-top: 5px;
+    }
+    
+    .checkbox-group label {
+        margin-bottom: 0;
+        font-weight: 400;
+        line-height: 1.5;
+    }
+    
+    .register-btn {
+        width: 100%;
+        padding: 12px 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+    }
+    
+    .register-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+    }
+    
+    .register-btn:active {
+        transform: translateY(0);
+    }
+    
+    .register-footer {
+        padding: 20px 30px;
+        background-color: #f8f9fa;
+        border-top: 1px solid #e0e0e0;
+        text-align: center;
+    }
+    
+    .register-footer p {
+        margin: 0;
+        font-size: 14px;
+        color: #666;
+    }
+    
+    .register-footer a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+    }
+    
+    .register-footer a:hover {
+        text-decoration: underline;
+    }
+    
+    .alert-info {
+        background-color: #d1ecf1;
+        border: 1px solid #bee5eb;
+        border-radius: 8px;
+        padding: 12px 15px;
+        margin-bottom: 20px;
+        color: #0c5460;
+        font-size: 13px;
+    }
+    
+    .password-requirements {
+        background-color: #f8f9fa;
+        border-left: 4px solid #667eea;
+        border-radius: 4px;
+        padding: 12px 15px;
+        margin-bottom: 20px;
+        font-size: 13px;
+        color: #555;
+    }
+    
+    .password-requirements h6 {
+        margin-top: 0;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+    }
+    
+    .password-requirements ul {
+        margin: 0;
+        padding-left: 20px;
+    }
+    
+    .password-requirements li {
+        margin: 4px 0;
+    }
+</style>
+
+<div class="register-container">
+    <div class="register-card">
+        <div class="register-header">
+            <div class="register-icon">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <h1>S'inscrire</h1>
+            <p>Créez votre compte pour accéder à la bibliothèque</p>
+        </div>
+        
+        <div class="register-body">
+            {% for flash_error in app.flashes('verify_email_error') %}
+                <div class="alert-info">
+                    <i class="fas fa-info-circle"></i> {{ flash_error }}
+                </div>
+            {% endfor %}
+
+            {% if registrationForm.vars.errors %}
+                <div class="form-errors">
+                    <strong>Erreurs du formulaire :</strong>
+                    {{ form_errors(registrationForm) }}
+                </div>
+            {% endif %}
+
+            <form method="post" novalidate>
+                <!-- Email -->
+                <div class="form-group">
+                    <label for="{{ registrationForm.email.vars.id }}">
+                        <i class="fas fa-envelope"></i> Email
+                    </label>
+                    {{ form_widget(registrationForm.email, {
+                        'attr': {
+                            'placeholder': 'votre.email@exemple.com',
+                            'required': 'required'
+                        }
+                    }) }}
+                    {% if registrationForm.email.vars.errors %}
+                        <small style="color: #dc3545; display: block; margin-top: 5px;">
+                            {{ form_errors(registrationForm.email) }}
+                        </small>
+                    {% endif %}
+                </div>
+
+                <!-- Mot de passe -->
+                <div class="form-group">
+                    <label for="{{ registrationForm.plainPassword.vars.id }}">
+                        <i class="fas fa-lock"></i> Mot de passe
+                    </label>
+                    {{ form_widget(registrationForm.plainPassword, {
+                        'attr': {
+                            'placeholder': 'Entrez un mot de passe sécurisé',
+                            'required': 'required'
+                        }
+                    }) }}
+                    <div class="password-requirements">
+                        <h6>Exigences du mot de passe :</h6>
+                        <ul>
+                            <li>Minimum 6 caractères</li>
+                            <li>Au moins une lettre majuscule</li>
+                            <li>Au moins un chiffre</li>
+                        </ul>
+                    </div>
+                    {% if registrationForm.plainPassword.vars.errors %}
+                        <small style="color: #dc3545; display: block; margin-top: 5px;">
+                            {{ form_errors(registrationForm.plainPassword) }}
+                        </small>
+                    {% endif %}
+                </div>
+
+                <!-- Conditions d'utilisation -->
+                <div class="checkbox-group">
+                    {{ form_widget(registrationForm.agreeTerms, {
+                        'attr': {
+                            'required': 'required'
+                        }
+                    }) }}
+                    {{ form_label(registrationForm.agreeTerms) }}
+                </div>
+                {% if registrationForm.agreeTerms.vars.errors %}
+                    <small style="color: #dc3545; display: block; margin-top: -15px; margin-bottom: 10px;">
+                        {{ form_errors(registrationForm.agreeTerms) }}
+                    </small>
+                {% endif %}
+
+                <button type="submit" class="register-btn">
+                    <i class="fas fa-user-check"></i> S'inscrire
+                </button>
+            </form>
+        </div>
+        
+        <div class="register-footer">
+            <p>Vous avez déjà un compte ? <a href="{{ path('app_login') }}">Connectez-vous ici</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,285 @@
+{% extends '@EasyAdmin/layout.html.twig' %}
+
+{% block content_title %}
+    Tableau de Bord
+{% endblock %}
+
+{% block main %}
+    <style>
+        .stat-card {
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, currentColor);
+        }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.9;
+        }
+        .stat-icon {
+            font-size: 3rem;
+            opacity: 0.1;
+            position: absolute;
+            right: 15px;
+            top: 15px;
+        }
+        .chart-container {
+            position: relative;
+            height: 350px;
+            margin-top: 20px;
+        }
+        .header-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 0;
+            margin-bottom: 30px;
+            border-radius: 10px;
+        }
+    </style>
+
+    <div class="header-section">
+        <div class="container-fluid">
+            <h1 class="mb-1">Bienvenue sur votre Bibliothèque</h1>
+            <p class="mb-0">Gestion complète de vos ressources bibliothécaires</p>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <!-- Statistiques principales -->
+        <div class="row mb-4">
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card stat-card text-white bg-primary h-100">
+                    <div class="card-body position-relative">
+                        <i class="fas fa-book stat-icon"></i>
+                        <p class="stat-label">Total Livres</p>
+                        <div class="stat-number">{{ livreCount }}</div>
+                        <small class="text-white-50">Ouvrages en base</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card stat-card text-white bg-success h-100">
+                    <div class="card-body position-relative">
+                        <i class="fas fa-pen-fancy stat-icon"></i>
+                        <p class="stat-label">Auteurs</p>
+                        <div class="stat-number">{{ auteurCount }}</div>
+                        <small class="text-white-50">Écrivains référencés</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card stat-card text-white bg-info h-100">
+                    <div class="card-body position-relative">
+                        <i class="fas fa-building stat-icon"></i>
+                        <p class="stat-label">Éditeurs</p>
+                        <div class="stat-number">{{ editeurCount }}</div>
+                        <small class="text-white-50">Maisons d'édition</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card stat-card text-white bg-warning h-100">
+                    <div class="card-body position-relative">
+                        <i class="fas fa-tags stat-icon"></i>
+                        <p class="stat-label">Catégories</p>
+                        <div class="stat-number">{{ categorieCount }}</div>
+                        <small class="text-white-50">Classifications</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Graphiques -->
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="card" style="box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);">
+                    <div class="card-header bg-light border-bottom">
+                        <h5 class="mb-0">
+                            <i class="fas fa-chart-doughnut me-2" style="color: #667eea;"></i>
+                            Distribution par Catégorie
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="categorieChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 mb-4">
+                <div class="card" style="box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);">
+                    <div class="card-header bg-light border-bottom">
+                        <h5 class="mb-0">
+                            <i class="fas fa-chart-line me-2" style="color: #667eea;"></i>
+                            Chronologie de Publication
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="dateChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tableau de catégories -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card" style="box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);">
+                    <div class="card-header bg-light border-bottom">
+                        <h5 class="mb-0">
+                            <i class="fas fa-list me-2" style="color: #667eea;"></i>
+                            Détails par Catégorie
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Catégorie</th>
+                                        <th class="text-end">Nombre de Livres</th>
+                                        <th class="text-center">Progression</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for i, label in categorieLabels %}
+                                        <tr>
+                                            <td><strong>{{ label }}</strong></td>
+                                            <td class="text-end">
+                                                <span class="badge bg-primary">{{ categorieCounts[i] }}</span>
+                                            </td>
+                                            <td>
+                                                <div class="progress" style="height: 20px;">
+                                                    <div class="progress-bar bg-success" 
+                                                         style="width: {{ (categorieCounts[i] / maxCount * 100)|round }}%;">
+                                                        {{ (categorieCounts[i] / maxCount * 100)|round(0) }}%
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Graphique Catégories - Donut
+        const categorieCtx = document.getElementById('categorieChart').getContext('2d');
+        const categorieLabels = {{ categorieLabels|raw }};
+        const categorieCounts = {{ categorieCounts|raw }};
+
+        new Chart(categorieCtx, {
+            type: 'doughnut',
+            data: {
+                labels: categorieLabels,
+                datasets: [{
+                    data: categorieCounts,
+                    backgroundColor: [
+                        '#667eea',
+                        '#764ba2',
+                        '#f093fb',
+                        '#4facfe',
+                        '#00f2fe',
+                        '#43e97b',
+                        '#fa709a',
+                    ],
+                    borderColor: 'white',
+                    borderWidth: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            font: { size: 12 }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Graphique Dates - Line
+        const dateCtx = document.getElementById('dateChart').getContext('2d');
+        const dateLabels = {{ dateLabels|raw }};
+        const dateCounts = {{ dateCounts|raw }};
+
+        new Chart(dateCtx, {
+            type: 'line',
+            data: {
+                labels: dateLabels,
+                datasets: [{
+                    label: 'Nombre de Livres',
+                    data: dateCounts,
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 5,
+                    pointBackgroundColor: '#667eea',
+                    pointBorderColor: 'white',
+                    pointBorderWidth: 2,
+                    pointHoverRadius: 7
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    </script>
+{% endblock %}
