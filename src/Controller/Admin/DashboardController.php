@@ -118,5 +118,8 @@ public function index(): Response
         yield MenuItem::linkToCrud('Auteurs', 'fas fa-user', Auteur::class);
         yield MenuItem::linkToCrud('Editeurs', 'fas fa-building', Editeur::class);
         yield MenuItem::linkToCrud('Catégories', 'fas fa-tags', Categorie::class);
+        yield MenuItem::section('Administrateur');
+        yield MenuItem::linkToRoute('Dashboard Biblio', 'fas fa-home', 'app_acceuil');
+        yield MenuItem::linkToLogout('Déconnecter', 'fas fa-sign-out-alt');
     }
 }

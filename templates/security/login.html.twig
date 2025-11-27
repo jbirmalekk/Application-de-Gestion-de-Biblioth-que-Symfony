@@ -195,6 +195,9 @@
                     <i class="fas fa-check-circle"></i>
                     Vous êtes connecté en tant que <strong>{{ app.user.userIdentifier }}</strong>
                     <br>
+                    <a href="{{ path('app_acceuil') }}" style="color: #0c5460; margin-top: 8px; display: inline-block; margin-right: 15px;">
+                        <i class="fas fa-home"></i> Dashboard Biblio
+                    </a>
                     <a href="{{ path('app_logout') }}" style="color: #0c5460; margin-top: 8px; display: inline-block;">
                         <i class="fas fa-sign-out-alt"></i> Se déconnecter
                     </a>
@@ -239,7 +242,7 @@
         </div>
         
         <div class="login-footer">
-            <p>Contacter un administrateur pour créer un compte</p>
+            <p>Pas encore de compte ? <a href="{{ path('app_register') }}">S'inscrire ici</a></p>
         </div>
     </div>
 </div>

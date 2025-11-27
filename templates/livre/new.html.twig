@@ -1,11 +1,8 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Livre{% endblock %}
+{% block title %}Ajouter un Livre{% endblock %}
 
 {% block body %}
-    <h1>Create new Livre</h1>
-
-    {{ include('livre/_form.html.twig') }}
-
-    <a href="{{ path('app_livre_index') }}">back to list</a>
+    {% set button_label = 'Enregistrer' %}
+    {% include 'livre/_form.html.twig' with {'form_title': 'Ajouter un nouveau livre'} %}
 {% endblock %}

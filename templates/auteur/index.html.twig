@@ -1,40 +1,262 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Auteur index{% endblock %}
+{% block title %}Liste des Auteurs{% endblock %}
 
-
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .auteur-container {
+            background-color: #ffffff;
+            padding: 2rem;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+        
+        .auteur-header {
+            background-color: #f9fafb;
+            padding: 1.5rem;
+            margin: -2rem -2rem 1.5rem -2rem;
+            border-bottom: 1px solid #e5e7eb;
+            border-radius: 5px 5px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .auteur-header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+        
+        .btn-new {
+            background-color: #ffffff;
+            color: #374151;
+            border: 1px solid #d1d5db;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-new:hover {
+            background-color: #f3f4f6;
+            border-color: #9ca3af;
+            color: #1f2937;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        .auteur-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+        
+        .auteur-table thead {
+            background-color: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .auteur-table thead th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            border: none;
+            letter-spacing: -0.25px;
+        }
+        
+        .auteur-table tbody tr {
+            border-bottom: 1px solid #f3f4f6;
+            transition: background-color 0.2s ease;
+        }
+        
+        .auteur-table tbody tr:hover {
+            background-color: #fafbfc;
+        }
+        
+        .auteur-table tbody td {
+            padding: 1rem;
+            color: #4b5563;
+            border: none;
+            vertical-align: middle;
+        }
+        
+        .auteur-name {
+            font-weight: 500;
+            color: #1f2937;
+        }
+        
+        .actions-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-action {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            background-color: #ffffff;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+            cursor: pointer;
+        }
+        
+        .btn-action:hover {
+            color: #1f2937;
+            border-color: #9ca3af;
+            background-color: #f9fafb;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .btn-action.view {
+            color: #2563eb;
+        }
+        
+        .btn-action.view:hover {
+            border-color: #2563eb;
+            background-color: #eff6ff;
+        }
+        
+        .btn-action.edit {
+            color: #16a34a;
+        }
+        
+        .btn-action.edit:hover {
+            border-color: #16a34a;
+            background-color: #f0fdf4;
+        }
+        
+        .btn-action.delete {
+            color: #dc2626;
+        }
+        
+        .btn-action.delete:hover {
+            border-color: #dc2626;
+            background-color: #fef2f2;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+        
+        .empty-state-icon {
+            font-size: 4rem;
+            color: #d1d5db;
+            margin-bottom: 1rem;
+        }
+        
+        .empty-state-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+        
+        .empty-state-text {
+            color: #9ca3af;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
-    <h1>Auteur index</h1>
-
-    <table class="table table-striped table-bordered table-hover" id="dataTables-example">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Prenom</th>
-                <th>Nom</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for auteur in auteurs %}
-            <tr>
-                <td>{{ auteur.id }}</td>
-                <td>{{ auteur.prenom }}</td>
-                <td>{{ auteur.nom }}</td>
-                <td>
-                    <a href="{{ path('app_auteur_show', {'id': auteur.id}) }}"><span class="btn btn-default"><i class="fa fa-eye"></i></span></a>
-                    <a href="{{ path('app_auteur_edit', {'id': auteur.id}) }}"><span class="btn btn-success"><i class="fa fa-pencil"></i></span></a>
-                    <a href="{{ path('app_auteur_delete', {'id': auteur.id}) }}"><span class="btn btn-danger"><i class="fa fa-trash-o"></i></span></a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="4">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_auteur_new') }}"><span class="btn btn-primary"><i class="fa fa-plus"></i></span>Create new</a>
+<div class="container-fluid" style="padding: 2rem 0;">
+    <div class="row justify-content-center">
+        <div class="col-12" style="max-width: 1000px;">
+            <div class="auteur-container">
+                <div class="auteur-header">
+                    <h1>Auteurs</h1>
+                    {% if is_granted('ROLE_ADMIN') %}
+                    <a href="{{ path('app_auteur_new') }}" class="btn-new">
+                        <i class="bi bi-plus-lg"></i> Nouvel Auteur
+                    </a>
+                    {% endif %}
+                </div>
+                <div class="table-container">
+                    {% if auteurs is not empty %}
+                    <table class="auteur-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 8%;">ID</th>
+                                <th style="width: 25%;">Prénom</th>
+                                <th style="width: 25%;">Nom</th>
+                                <th style="width: 42%;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for auteur in auteurs %}
+                            <tr>
+                                <td>#{{ auteur.id }}</td>
+                                <td class="auteur-name">{{ auteur.prenom }}</td>
+                                <td class="auteur-name">{{ auteur.nom }}</td>
+                                <td>
+                                    <div class="actions-group">
+                                        <a href="{{ path('app_auteur_show', {'id': auteur.id}) }}" 
+                                           class="btn-action view" 
+                                           title="Voir les détails">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        {% if is_granted('ROLE_ADMIN') %}
+                                        <a href="{{ path('app_auteur_edit', {'id': auteur.id}) }}" 
+                                           class="btn-action edit" 
+                                           title="Modifier">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <form method="post" 
+                                              action="{{ path('app_auteur_delete', {'id': auteur.id}) }}" 
+                                              style="display: inline;"
+                                              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet auteur ?');">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ auteur.id) }}">
+                                            <button type="submit" class="btn-action delete" title="Supprimer">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="bi bi-person"></i>
+                        </div>
+                        <h2 class="empty-state-title">Aucun auteur trouvé</h2>
+                        <p class="empty-state-text">Il n'y a aucun auteur dans la base de données pour le moment.</p>
+                        {% if is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('app_auteur_new') }}" class="btn-new" style="margin-top: 1rem;">
+                            <i class="bi bi-plus-lg"></i> Ajouter le premier auteur
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

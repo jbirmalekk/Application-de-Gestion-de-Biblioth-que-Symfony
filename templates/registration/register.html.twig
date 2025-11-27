@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_minimal.html.twig' %}
 
 {% block title %}Inscription - Bibliothèque{% endblock %}
 
@@ -9,7 +9,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: white;
         padding: 20px;
     }
     
@@ -221,12 +221,7 @@
                 </div>
             {% endfor %}
 
-            {% if registrationForm.vars.errors %}
-                <div class="form-errors">
-                    <strong>Erreurs du formulaire :</strong>
-                    {{ form_errors(registrationForm) }}
-                </div>
-            {% endif %}
+           
 
             <form method="post" novalidate>
                 <!-- Email -->
@@ -269,6 +264,26 @@
                     {% if registrationForm.plainPassword.vars.errors %}
                         <small style="color: #dc3545; display: block; margin-top: 5px;">
                             {{ form_errors(registrationForm.plainPassword) }}
+                        </small>
+                    {% endif %}
+                </div>
+
+                <!-- Rôle -->
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-user-tag"></i> Rôle
+                    </label>
+                    <div style="display: flex; gap: 20px; margin-top: 10px;">
+                        {% for choice in registrationForm.userRole %}
+                            <div style="display: flex; align-items: center;">
+                                {{ form_widget(choice) }}
+                                {{ form_label(choice, null, {'label_attr': {'style': 'margin-bottom: 0; margin-left: 8px; font-weight: 400; cursor: pointer;'}}) }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% if registrationForm.userRole.vars.errors %}
+                        <small style="color: #dc3545; display: block; margin-top: 5px;">
+                            {{ form_errors(registrationForm.userRole) }}
                         </small>
                     {% endif %}
                 </div>

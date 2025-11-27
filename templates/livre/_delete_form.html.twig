@@ -1,4 +1,16 @@
-<form method="post" action="{{ path('app_livre_delete', {'id': livre.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
+<form method="post" action="{{ path('app_livre_delete', {'id': livre.id}) }}" 
+      style="display: inline;"
+      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce livre ?');">
     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ livre.id) }}">
-    <button class="btn">Delete</button>
+    <button type="submit" class="btn-delete" style="background-color: #ffffff; color: #dc2626; border: 1px solid #dc2626; padding: 0.625rem 1.25rem; border-radius: 4px; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 0.5rem;">
+        <i class="bi bi-trash"></i> Supprimer
+    </button>
 </form>
+
+<style>
+.btn-delete:hover {
+    background-color: #fef2f2 !important;
+    border-color: #dc2626 !important;
+    color: #dc2626 !important;
+}
+</style>

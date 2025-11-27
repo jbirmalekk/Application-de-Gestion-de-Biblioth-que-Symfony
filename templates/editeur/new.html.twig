@@ -1,11 +1,8 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Editeur{% endblock %}
+{% block title %}Ajouter un Éditeur{% endblock %}
 
 {% block body %}
-    <h1>Create new Editeur</h1>
-
-    {{ include('editeur/_form.html.twig') }}
-
-    <a href="{{ path('app_editeur_index') }}">back to list</a>
+    {% set button_label = 'Enregistrer' %}
+    {% include 'editeur/_form.html.twig' with {'form_title': 'Ajouter un nouvel éditeur'} %}
 {% endblock %}
