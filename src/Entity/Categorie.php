@@ -17,7 +17,7 @@ class Categorie
     #[ORM\Column(length: 100)]
     private ?string $designation = null;
 
-    #[ORM\Column(type: Types::TEXT)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
     public function getId(): ?int

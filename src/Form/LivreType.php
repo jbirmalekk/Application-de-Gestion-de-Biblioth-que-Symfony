@@ -8,6 +8,7 @@ use App\Entity\Editeur;
 use App\Entity\Livre;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -41,6 +42,15 @@ class LivreType extends AbstractType
                 'multiple' => true,
                 'expanded' => false,
                 'required' => false,
+            ])
+            ->add('image', FileType::class, [
+                'label' => 'Image du livre',
+                'required' => false,
+                'mapped' => false,
+                'attr' => [
+                    'accept' => 'image/*',
+                    'class' => 'form-control',
+                ]
             ])
         ;
     }

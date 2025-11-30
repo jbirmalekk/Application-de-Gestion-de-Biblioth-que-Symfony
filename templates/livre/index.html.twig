@@ -5,568 +5,365 @@
 {% block stylesheets %}
     {{ parent() }}
     <style>
-        .livre-container {
-            background-color: #ffffff;
-            padding: 2rem;
-            border-radius: 6px;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        /* Override pour supprimer arrière-plan bleu de la page */
+        .index-page main {
+            background: #ffffff;
         }
-        
+
+        .livre-page-container {
+            padding: 2rem 0;
+            background: #ffffff;
+        }
+
         .livre-header {
-            background-color: #f9fafb;
-            padding: 1.5rem;
-            margin: -2rem -2rem 1.5rem -2rem;
-            border-bottom: 1px solid #e5e7eb;
-            border-radius: 5px 5px 0 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem 0;
         }
-        
+
         .livre-header h1 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #1f2937;
-            margin: 0;
-            letter-spacing: -0.5px;
-        }
-        
-        .btn-new {
-            background-color: #ffffff;
-            color: #374151;
-            border: 1px solid #d1d5db;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .btn-new:hover {
-            background-color: #f3f4f6;
-            border-color: #9ca3af;
-            color: #1f2937;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-        }
-
-        .filters-section {
-            background-color: #f9fafb;
-            padding: 1.5rem;
-            border-radius: 6px;
-            border: 1px solid #e5e7eb;
-            margin-bottom: 1.5rem;
-        }
-
-        .filters-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .filter-group {
-            margin-bottom: 1rem;
-        }
-
-        .filter-group label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: #374151;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
             margin-bottom: 0.5rem;
         }
 
-        .filter-group input,
-        .filter-group select {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-            font-size: 0.875rem;
-            background-color: #ffffff;
-            transition: border-color 0.2s ease;
+        .livre-header p {
+            font-size: 1rem;
+            color: #666;
         }
 
-        .filter-group input:focus,
-        .filter-group select:focus {
-            outline: none;
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        .livre-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
         }
 
-        .filters-buttons {
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.75rem;
+        }
+
+        .blog-card {
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
             display: flex;
-            gap: 0.5rem;
-            margin-top: 1rem;
+            flex-direction: column;
+            height: 100%;
         }
 
-        .btn-filter {
+        .blog-card:hover {
+            border-color: #6b7280;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+            transform: translateY(-4px);
+        }
+
+        .blog-image {
+            position: relative;
+            overflow: hidden;
+            height: 280px;
+        }
+
+        .blog-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .category-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #fff;
+            padding: 0.5rem 0.875rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+        }
+
+        .blog-content {
+            padding: 1.5rem;
             flex: 1;
-            padding: 0.5rem;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            background-color: #ffffff;
-            color: #374151;
+            display: flex;
+            flex-direction: column;
         }
 
-        .btn-filter:hover {
-            background-color: #f3f4f6;
-            border-color: #9ca3af;
-        }
-
-        .btn-filter.primary {
-            background-color: #2563eb;
-            color: #ffffff;
-            border-color: #2563eb;
-        }
-
-        .btn-filter.primary:hover {
-            background-color: #1d4ed8;
-            border-color: #1d4ed8;
-        }
-
-        .results-info {
-            color: #6b7280;
-            font-size: 0.875rem;
+        .author-info {
+            display: flex;
+            gap: 0.75rem;
             margin-bottom: 1rem;
+        }
+
+        .author-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .author-details {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .author-name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .publish-date {
+            font-size: 0.75rem;
+            color: #999;
+        }
+
+        .blog-card h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 0.75rem 0;
+            line-height: 1.4;
+        }
+
+        .blog-card h3 a {
+            color: #1a1a1a;
+            text-decoration: none;
+        }
+
+        .blog-card h3 a:hover {
+            color: #10b981;
+        }
+
+        .blog-card p {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+            flex: 1;
+        }
+
+        .blog-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid #f0f0f0;
+            gap: 1rem;
+        }
+
+        .price-tag {
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #10b981;
         }
 
-        .results-info strong {
-            color: #1f2937;
-        }
-        
-        .table-container {
-            overflow-x: auto;
-        }
-        
-        .livre-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.875rem;
-        }
-        
-        .livre-table thead {
-            background-color: #f9fafb;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        
-        .livre-table thead th {
-            padding: 1rem;
-            text-align: left;
-            font-weight: 600;
-            color: #374151;
-            border: none;
-            letter-spacing: -0.25px;
-        }
-        
-        .livre-table tbody tr {
-            border-bottom: 1px solid #f3f4f6;
-            transition: background-color 0.2s ease;
-        }
-        
-        .livre-table tbody tr:hover {
-            background-color: #fafbfc;
-        }
-        
-        .livre-table tbody td {
-            padding: 1rem;
-            color: #4b5563;
-            border: none;
-            vertical-align: middle;
-        }
-        
-        .badge-quantity {
-            display: inline-block;
-            padding: 0.35rem 0.7rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .badge-quantity.in-stock {
-            background-color: #ecfdf5;
-            color: #065f46;
-        }
-        
-        .badge-quantity.out-stock {
-            background-color: #fef2f2;
-            color: #991b1b;
-        }
-        
-        .isbn-code {
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-            font-size: 0.8rem;
-            background-color: #f9fafb;
-            color: #4b5563;
-            padding: 0.25rem 0.5rem;
-            border-radius: 3px;
-            border: 1px solid #e5e7eb;
-        }
-        
-        .badge-relation {
-            display: inline-block;
-            padding: 0.35rem 0.7rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            background-color: #eff6ff;
-            color: #1e40af;
-            border: 1px solid #bfdbfe;
-        }
-        
-        .badge-category {
-            display: inline-block;
-            padding: 0.35rem 0.7rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            background-color: #f5f3ff;
-            color: #6b21a8;
-            border: 1px solid #ddd6fe;
-        }
-        
-        .actions-group {
+        .actions-card {
             display: flex;
             gap: 0.5rem;
         }
-        
-        .btn-action {
-            width: 32px;
-            height: 32px;
+
+        .btn-card-action {
+            width: 36px;
+            height: 36px;
             padding: 0;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-            background-color: #ffffff;
-            color: #6b7280;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            background-color: #fff;
+            color: #666;
             display: flex;
             align-items: center;
             justify-content: center;
             text-decoration: none;
             transition: all 0.2s ease;
-            font-size: 0.875rem;
+            font-size: 0.9rem;
             cursor: pointer;
         }
-        
-        .btn-action:hover {
+
+        .btn-card-action:hover {
             color: #1f2937;
-            border-color: #9ca3af;
-            background-color: #f9fafb;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            border-color: #bbb;
+            background-color: #f9f9f9;
         }
-        
-        .btn-action.view {
-            color: #2563eb;
+
+        .btn-card-action.view {
+            color: #10b981;
         }
-        
-        .btn-action.view:hover {
-            border-color: #2563eb;
-            background-color: #eff6ff;
+
+        .btn-card-action.view:hover {
+            border-color: #10b981;
+            background-color: #ecfdf5;
         }
-        
-        .btn-action.edit {
+
+        .btn-card-action.edit {
             color: #16a34a;
         }
-        
-        .btn-action.edit:hover {
+
+        .btn-card-action.edit:hover {
             border-color: #16a34a;
             background-color: #f0fdf4;
         }
-        
-        .btn-action.delete {
+
+        .btn-card-action.delete {
             color: #dc2626;
         }
-        
-        .btn-action.delete:hover {
+
+        .btn-card-action.delete:hover {
             border-color: #dc2626;
             background-color: #fef2f2;
         }
-        
+
         .empty-state {
+            grid-column: 1 / -1;
             text-align: center;
-            padding: 3rem 2rem;
+            padding: 4rem 2rem;
         }
-        
+
         .empty-state-icon {
-            font-size: 4rem;
-            color: #d1d5db;
+            font-size: 3.5rem;
+            color: #ddd;
             margin-bottom: 1rem;
         }
-        
+
         .empty-state-title {
             font-size: 1.25rem;
-            font-weight: 600;
-            color: #1f2937;
+            font-weight: 700;
+            color: #333;
             margin-bottom: 0.5rem;
         }
-        
+
         .empty-state-text {
-            color: #9ca3af;
+            color: #999;
             margin-bottom: 1.5rem;
             font-size: 0.95rem;
+        }
+
+        @media (max-width: 768px) {
+            .livre-header h1 {
+                font-size: 1.75rem;
+            }
+
+            .books-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 1.25rem;
+            }
         }
     </style>
 {% endblock %}
 
 {% block body %}
-<div class="container-fluid" style="padding: 2rem 0;">
-    <div class="row justify-content-center">
-        <div class="col-12" style="max-width: 1200px;">
-            <div class="livre-container">
-                <div class="livre-header">
-                    <h1>Liste des Livres</h1>
-                    {% if is_granted('ROLE_ADMIN') %}
-                    <a href="{{ path('app_livre_new') }}" class="btn-new">
-                        <i class="bi bi-plus-lg"></i> Nouveau Livre
-                    </a>
-                    {% endif %}
-                </div>
+<div class="livre-page-container">
+    <!-- Header -->
+    <div class="livre-header" data-aos="fade-up">
+        <h1>Tous Nos Livres</h1>
+        <p>Explorez notre collection complète</p>
+    </div>
 
-                <!-- Section des Filtres -->
-                <div class="filters-section">
-                    <div class="filters-title">
-                        <i class="bi bi-funnel"></i> Recherche et Filtres Avancés
-                    </div>
-                    <form method="GET" action="{{ path('app_livre_index') }}" class="filters-form">
-                        <div class="row">
-                            <!-- Recherche -->
-                            <div class="col-md-6 col-lg-3">
-                                <div class="filter-group">
-                                    <label for="search"><i class="bi bi-search"></i> Rechercher</label>
-                                    <input type="text" 
-                                           id="search"
-                                           name="search" 
-                                           placeholder="Titre du livre..." 
-                                           value="{{ search }}"
-                                           class="form-control">
+    <!-- Contenu -->
+    <div class="livre-content">
+            {% if is_granted('ROLE_ADMIN') %}
+            <div style="margin-bottom: 1.5rem; text-align: right;">
+                <a href="{{ path('app_livre_new') }}" class="btn btn-primary" style="border-radius: 8px;">
+                    <i class="bi bi-plus-lg"></i> Nouveau Livre
+                </a>
+            </div>
+            {% endif %}
+
+            {% if livres is not empty %}
+                <div class="books-grid">
+                    {% for book in livres %}
+                        <div class="blog-card">
+                            <div class="blog-image">
+                                {% if book.image %}
+                                    <img src="{{ asset('assets/img/books/' ~ book.image) }}" alt="{{ book.titre }}" loading="lazy">
+                                {% else %}
+                                    <img src="{{ asset('assets/img/book.jpg') }}" alt="{{ book.titre }}" loading="lazy">
+                                {% endif %}
+                                <div class="category-badge">
+                                    {% if book.qte > 0 %}
+                                        Disponible
+                                    {% else %}
+                                        Épuisé
+                                    {% endif %}
                                 </div>
                             </div>
-
-                            <!-- Catégorie -->
-                            <div class="col-md-6 col-lg-3">
-                                <div class="filter-group">
-                                    <label for="categorie"><i class="bi bi-bookmark"></i> Catégorie</label>
-                                    <select id="categorie" name="categorie" class="form-control">
-                                        <option value="">-- Toutes les catégories --</option>
-                                        {% for categorie in categories %}
-                                            <option value="{{ categorie.id }}" 
-                                                    {% if selectedCategorie == categorie.id %}selected{% endif %}>
-                                                {{ categorie.designation }}
-                                            </option>
-                                        {% endfor %}
-                                    </select>
+                            <div class="blog-content">
+                                <div class="author-info">
+                                    <img src="{{ asset('assets/img/book1.jpg') }}" alt="Livre" class="author-avatar">
+                                    <div class="author-details">
+                                        <span class="author-name">ISBN: {{ book.isbn }}</span>
+                                        <span class="publish-date">{{ book.datapub|date('M Y') }}</span>
+                                    </div>
                                 </div>
-                            </div>
-
-                            <!-- Auteur -->
-                            <div class="col-md-6 col-lg-3">
-                                <div class="filter-group">
-                                    <label for="auteur"><i class="bi bi-person"></i> Auteur</label>
-                                    <select id="auteur" name="auteur" class="form-control">
-                                        <option value="">-- Tous les auteurs --</option>
-                                        {% for auteur in auteurs %}
-                                            <option value="{{ auteur.id }}" 
-                                                    {% if selectedAuteur == auteur.id %}selected{% endif %}>
-                                                {{ auteur.nom }} {{ auteur.prenom }}
-                                            </option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- Éditeur -->
-                            <div class="col-md-6 col-lg-3">
-                                <div class="filter-group">
-                                    <label for="editeur"><i class="bi bi-building"></i> Éditeur</label>
-                                    <select id="editeur" name="editeur" class="form-control">
-                                        <option value="">-- Tous les éditeurs --</option>
-                                        {% for editeur in editeurs %}
-                                            <option value="{{ editeur.id }}" 
-                                                    {% if selectedEditeur == editeur.id %}selected{% endif %}>
-                                                {{ editeur.nom }}
-                                            </option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mt-3">
-                            <!-- Prix Min -->
-                            <div class="col-md-6 col-lg-2">
-                                <div class="filter-group">
-                                    <label for="prix_min"><i class="bi bi-currency-euro"></i> Prix Min</label>
-                                    <input type="number" 
-                                           id="prix_min"
-                                           name="prix_min" 
-                                           placeholder="0" 
-                                           value="{{ prixMin ?? '' }}"
-                                           step="0.01"
-                                           min="0"
-                                           class="form-control">
-                                </div>
-                            </div>
-
-                            <!-- Prix Max -->
-                            <div class="col-md-6 col-lg-2">
-                                <div class="filter-group">
-                                    <label for="prix_max"><i class="bi bi-currency-euro"></i> Prix Max</label>
-                                    <input type="number" 
-                                           id="prix_max"
-                                           name="prix_max" 
-                                           placeholder="9999" 
-                                           value="{{ prixMax ?? '' }}"
-                                           step="0.01"
-                                           min="0"
-                                           class="form-control">
-                                </div>
-                            </div>
-
-                            <!-- Tri -->
-                            <div class="col-md-6 col-lg-2">
-                                <div class="filter-group">
-                                    <label for="sort_by"><i class="bi bi-sort-down"></i> Trier par</label>
-                                    <select id="sort_by" name="sort_by" class="form-control">
-                                        <option value="recent" {% if sortBy == 'recent' %}selected{% endif %}>Les plus récents</option>
-                                        <option value="price_asc" {% if sortBy == 'price_asc' %}selected{% endif %}>Prix croissant</option>
-                                        <option value="price_desc" {% if sortBy == 'price_desc' %}selected{% endif %}>Prix décroissant</option>
-                                        <option value="title_asc" {% if sortBy == 'title_asc' %}selected{% endif %}>Titre (A-Z)</option>
-                                        <option value="title_desc" {% if sortBy == 'title_desc' %}selected{% endif %}>Titre (Z-A)</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- Boutons -->
-                            <div class="col-md-6 col-lg-6">
-                                <div class="filters-buttons">
-                                    <button type="submit" class="btn-filter primary">
-                                        <i class="bi bi-search"></i> Rechercher
-                                    </button>
-                                    <a href="{{ path('app_livre_index') }}" class="btn-filter">
-                                        <i class="bi bi-arrow-clockwise"></i> Réinitialiser
+                                <h3>
+                                    <a href="{{ path('app_livre_show', {'id': book.id}) }}">
+                                        {{ book.titre }}
                                     </a>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Info résultats -->
-                <div class="results-info">
-                    <i class="bi bi-book"></i>
-                    <strong>{{ livres|length }}</strong> livre(s) trouvé(s)
-                    {% if search %} pour "<strong>{{ search }}</strong>"{% endif %}
-                </div>
-
-                <div class="table-container">
-                    {% if livres is not empty %}
-                    <table class="livre-table">
-                        <thead>
-                            <tr>
-                                <th style="width: 5%;">ID</th>
-                                <th style="width: 25%;">Titre</th>
-                                <th style="width: 12%;">Éditeur</th>
-                                <th style="width: 12%;">Catégorie</th>
-                                <th style="width: 8%;">Quantité</th>
-                                <th style="width: 8%;">Prix</th>
-                                <th style="width: 12%;">Date Pub</th>
-                                <th style="width: 18%;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {% for livre in livres %}
-                            <tr>
-                                <td>#{{ livre.id }}</td>
-                                <td><strong>{{ livre.titre }}</strong></td>
-                                <td>
-                                    {% if livre.editeur %}
-                                        <span class="badge-relation">{{ livre.editeur.nom }}</span>
-                                    {% else %}
-                                        <span style="color: #9ca3af;">—</span>
+                                </h3>
+                                <p>
+                                    {% if book.categorie %}
+                                        <strong>{{ book.categorie.designation }}</strong>
                                     {% endif %}
-                                </td>
-                                <td>
-                                    {% if livre.categorie %}
-                                        <span class="badge-category">{{ livre.categorie.designation }}</span>
-                                    {% else %}
-                                        <span style="color: #9ca3af;">—</span>
+                                    {% if book.editeur %}
+                                        <br><small>{{ book.editeur.nom }}</small>
                                     {% endif %}
-                                </td>
-                                <td>
-                                    <span class="badge-quantity {% if livre.qte > 0 %}in-stock{% else %}out-stock{% endif %}">
-                                        {{ livre.qte }} unités
-                                    </span>
-                                </td>
-                                <td>{{ livre.prix|number_format(2, ',', '.') }} €</td>
-                                <td>{{ livre.datapub ? livre.datapub|date('d/m/Y') : '—' }}</td>
-                                <td>
-                                    <div class="actions-group">
-                                        <a href="{{ path('app_livre_show', {'id': livre.id}) }}" 
-                                           class="btn-action view" 
-                                           title="Voir les détails">
+                                </p>
+                                <div class="blog-footer">
+                                    <div class="price-tag">
+                                        <i class="bi bi-currency-euro"></i> {{ book.prix|number_format(2, ',', '.') }}
+                                    </div>
+                                    <div class="actions-card">
+                                        <a href="{{ path('app_livre_show', {'id': book.id}) }}" 
+                                           class="btn-card-action view" 
+                                           title="Voir">
                                             <i class="bi bi-eye"></i>
                                         </a>
                                         {% if is_granted('ROLE_ADMIN') %}
-                                        <a href="{{ path('app_livre_edit', {'id': livre.id}) }}" 
-                                           class="btn-action edit" 
+                                        <a href="{{ path('app_livre_edit', {'id': book.id}) }}" 
+                                           class="btn-card-action edit" 
                                            title="Modifier">
                                             <i class="bi bi-pencil"></i>
                                         </a>
                                         <form method="post" 
-                                              action="{{ path('app_livre_delete', {'id': livre.id}) }}" 
+                                              action="{{ path('app_livre_delete', {'id': book.id}) }}" 
                                               style="display: inline;"
-                                              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce livre ?');">
-                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ livre.id) }}">
-                                            <button type="submit" class="btn-action delete" title="Supprimer">
+                                              onsubmit="return confirm('Êtes-vous sûr ?');">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ book.id) }}">
+                                            <button type="submit" class="btn-card-action delete" title="Supprimer">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </form>
                                         {% endif %}
                                     </div>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                    {% else %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="books-grid">
                     <div class="empty-state">
                         <div class="empty-state-icon">
-                            <i class="bi bi-book"></i>
+                            <i class="bi bi-search"></i>
                         </div>
-                        <h2 class="empty-state-title">Aucun livre trouvé</h2>
+                        <h3 class="empty-state-title">Aucun livre trouvé</h3>
                         <p class="empty-state-text">
-                            {% if search or selectedCategorie or selectedAuteur or selectedEditeur or prixMin or prixMax %}
-                                Aucun livre ne correspond à vos critères de recherche.
-                                <br><a href="{{ path('app_livre_index') }}">Réinitialiser les filtres</a>
-                            {% else %}
-                                Il n'y a aucun livre dans la base de données pour le moment.
-                            {% endif %}
+                            Aucun livre n'est disponible pour le moment.
                         </p>
-                        {% if is_granted('ROLE_ADMIN') %}
-                        <a href="{{ path('app_livre_new') }}" class="btn-new" style="margin-top: 1rem;">
-                            <i class="bi bi-plus-lg"></i> Ajouter le premier livre
-                        </a>
-                        {% endif %}
                     </div>
-                    {% endif %}
                 </div>
-            </div>
+            {% endif %}
         </div>
     </div>
 </div>
