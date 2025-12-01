@@ -1,0 +1,388 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter au Panier - {{ livre.titre }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Override pour supprimer arrière-plan bleu de la page */
+        .index-page main {
+            background: #ffffff;
+        }
+
+        .add-to-cart-container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            min-height: 60vh;
+        }
+
+        .add-to-cart-card {
+            background: #ffffff;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .book-image-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .book-image-container {
+            width: 100%;
+            aspect-ratio: 3/4;
+            background: #f3f4f6;
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e5e7eb;
+        }
+
+        .book-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .book-initial {
+            font-size: 4rem;
+            color: #9ca3af;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .form-section {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .book-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            line-height: 1.4;
+        }
+
+        .book-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .meta-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .meta-label {
+            font-weight: 600;
+            color: #374151;
+            min-width: 100px;
+        }
+
+        .price-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .current-price {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .price-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .quantity-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .quantity-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.75rem;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: #ffffff;
+            border-radius: 4px;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+        }
+
+        .quantity-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: #f9fafb;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #374151;
+            font-weight: 600;
+        }
+
+        .quantity-btn:hover {
+            background: #e5e7eb;
+            color: #1f2937;
+        }
+
+        .quantity-input {
+            width: 60px;
+            height: 36px;
+            text-align: center;
+            border: none;
+            background: transparent;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .quantity-input:focus {
+            outline: none;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn-add-cart {
+            flex: 1;
+            background-color: #1f2937;
+            color: white;
+            border: 1px solid #1f2937;
+            padding: 0.875rem 1rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-add-cart:hover {
+            background-color: #111827;
+            border-color: #111827;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-cancel {
+            flex: 1;
+            background: #ffffff;
+            color: #6b7280;
+            border: 1px solid #d1d5db;
+            padding: 0.875rem 1rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-cancel:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+            color: #374151;
+        }
+
+        @media (max-width: 768px) {
+            .add-to-cart-card {
+                grid-template-columns: 1fr;
+                padding: 1.5rem;
+                gap: 1.5rem;
+            }
+
+            .book-image-container {
+                margin-bottom: 1rem;
+            }
+
+            .book-title {
+                font-size: 1.25rem;
+            }
+
+            .current-price {
+                font-size: 1.5rem;
+            }
+
+            .quantity-control {
+                justify-content: space-between;
+            }
+
+            .quantity-input {
+                width: 50px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="add-to-cart-container">
+    <div class="add-to-cart-card">
+        <!-- Image du Livre -->
+        <div class="book-image-section">
+            <div class="book-image-container">
+                            {% if livre.image %}
+                                <img src="{{ asset('assets/img/books/' ~ livre.image) }}" alt="{{ livre.titre }}">
+                            {% else %}
+                                <div class="book-initial">{{ livre.titre|slice(0, 1)|upper }}</div>
+                            {% endif %}
+            </div>
+        </div>
+
+        <!-- Formulaire d'ajout -->
+        <div class="form-section">
+            <h1 class="book-title">{{ livre.titre }}</h1>
+
+            <div class="book-meta">
+                {% if livre.auteurs|length > 0 %}
+                    <div class="meta-row">
+                        <span class="meta-label"><i class="bi bi-person"></i> Auteur:</span>
+                        <span>{{ livre.auteurs|first.prenom }} {{ livre.auteurs|first.nom }}</span>
+                    </div>
+                {% endif %}
+
+                {% if livre.categorie %}
+                    <div class="meta-row">
+                        <span class="meta-label"><i class="bi bi-tag"></i> Catégorie:</span>
+                        <span>{{ livre.categorie.designation }}</span>
+                    </div>
+                {% endif %}
+
+                {% if livre.editeur %}
+                    <div class="meta-row">
+                        <span class="meta-label"><i class="bi bi-building"></i> Éditeur:</span>
+                        <span>{{ livre.editeur.nom }}</span>
+                    </div>
+                {% endif %}
+
+                {% if livre.isbn %}
+                    <div class="meta-row">
+                        <span class="meta-label"><i class="bi bi-barcode"></i> ISBN:</span>
+                        <span>{{ livre.isbn }}</span>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="price-section">
+                <div class="current-price">
+                    {{ livre.prix|number_format(2, ',', ' ') }} €
+                </div>
+                <div class="price-label">Prix unitaire</div>
+            </div>
+
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger" style="margin-bottom: 1.5rem; padding: 0.75rem; background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 4px; color: #991b1b; font-size: 0.875rem;">
+                    <i class="bi bi-exclamation-triangle"></i> {{ message }}
+                </div>
+            {% endfor %}
+
+            <form method="POST" action="{{ path('panier_ajouter', {'id': livre.id}) }}" style="display: flex; flex-direction: column; height: 100%;">
+                <div class="quantity-section">
+                    <label class="quantity-label">Quantité</label>
+                    {% if livre.qte > 0 %}
+                        <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.75rem;">
+                            <i class="bi bi-check-circle" style="color: #16a34a;"></i> Stock disponible: {{ livre.qte }} unité{{ livre.qte > 1 ? 's' : '' }}
+                        </div>
+                    {% else %}
+                        <div style="font-size: 0.875rem; color: #dc2626; margin-bottom: 0.75rem;">
+                            <i class="bi bi-x-circle"></i> Épuisé
+                        </div>
+                    {% endif %}
+                    <div class="quantity-control">
+                        <button type="button" class="quantity-btn" onclick="decreaseQuantity()">−</button>
+                        <input type="number" id="quantite" name="quantite" value="1" min="1" max="{{ livre.qte > 0 ? livre.qte : 1 }}" class="quantity-input">
+                        <button type="button" class="quantity-btn" onclick="increaseQuantity()" {% if livre.qte <= 0 %}disabled style="opacity: 0.5; cursor: not-allowed;"{% endif %}>+</button>
+                    </div>
+                </div>
+
+                <input type="hidden" name="_token" value="{{ csrf_token('add_panier_' ~ livre.id) }}">
+
+                <div class="action-buttons">
+                    <button type="submit" class="btn-add-cart" {% if livre.qte <= 0 %}disabled style="opacity: 0.5; cursor: not-allowed;"{% endif %}>
+                        <i class="bi bi-cart-plus"></i> {% if livre.qte <= 0 %}Épuisé{% else %}Ajouter au panier{% endif %}
+                    </button>
+                    <a href="{{ path('app_livre_index') }}" class="btn-cancel">
+                        <i class="bi bi-arrow-left"></i> Retour
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function decreaseQuantity() {
+        const input = document.getElementById('quantite');
+        if (input.value > 1) {
+            input.value = parseInt(input.value) - 1;
+        }
+    }
+
+    function increaseQuantity() {
+        const input = document.getElementById('quantite');
+        const max = parseInt(input.getAttribute('max'));
+        const current = parseInt(input.value);
+        if (current < max) {
+            input.value = current + 1;
+        }
+    }
+
+    // Autoriser le clavier pour les chiffres seulement
+    document.getElementById('quantite').addEventListener('keypress', function(e) {
+        if (!/[0-9]/.test(e.key)) {
+            e.preventDefault();
+        }
+    });
+
+    // S'assurer que la valeur reste dans les limites
+    document.getElementById('quantite').addEventListener('change', function(e) {
+        const max = parseInt(this.getAttribute('max'));
+        if (this.value < 1) this.value = 1;
+        if (this.value > max) this.value = max;
+    });
+</script>
+{% endblock %}
