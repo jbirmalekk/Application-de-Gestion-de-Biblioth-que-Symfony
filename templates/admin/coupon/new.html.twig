@@ -1,0 +1,192 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau coupon{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .index-page main {
+            background: #ffffff;
+        }
+
+        .form-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .form-header {
+            margin-bottom: 2rem;
+        }
+
+        .form-header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+        }
+
+        .form-card {
+            background: #ffffff;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.625rem 0.875rem;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 0.25rem;
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .form-errors {
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .btn-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .btn-submit {
+            background-color: #1f2937;
+            color: white;
+            border: 1px solid #1f2937;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-submit:hover {
+            background-color: #111827;
+        }
+
+        .btn-cancel {
+            background: #ffffff;
+            color: #6b7280;
+            border: 1px solid #d1d5db;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .btn-cancel:hover {
+            background: #f9fafb;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="form-container">
+    <div class="form-header">
+        <h1><i class="bi bi-plus-circle"></i> Nouveau coupon</h1>
+    </div>
+
+    <div class="form-card">
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+            {% if form.vars.errors|length > 0 %}
+                <div class="form-errors">
+                    <strong><i class="bi bi-exclamation-triangle"></i> Erreurs du formulaire :</strong>
+                    {{ form_errors(form) }}
+                </div>
+            {% endif %}
+
+            <div class="form-group">
+                {{ form_label(form.code) }}
+                {{ form_widget(form.code) }}
+                {{ form_errors(form.code) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.type) }}
+                {{ form_widget(form.type) }}
+                {{ form_errors(form.type) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.valeur) }}
+                {{ form_widget(form.valeur) }}
+                {{ form_errors(form.valeur) }}
+                {{ form_help(form.valeur) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.montantMinimum) }}
+                {{ form_widget(form.montantMinimum) }}
+                {{ form_errors(form.montantMinimum) }}
+                {{ form_help(form.montantMinimum) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.dateExpiration) }}
+                {{ form_widget(form.dateExpiration) }}
+                {{ form_errors(form.dateExpiration) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.usageMax) }}
+                {{ form_widget(form.usageMax) }}
+                {{ form_errors(form.usageMax) }}
+                {{ form_help(form.usageMax) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.description) }}
+                {{ form_widget(form.description) }}
+                {{ form_errors(form.description) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_widget(form.actif) }}
+                {{ form_label(form.actif) }}
+                {{ form_errors(form.actif) }}
+            </div>
+
+            <div class="btn-actions">
+                <a href="{{ path('admin_coupons_index') }}" class="btn-cancel">
+                    <i class="bi bi-arrow-left"></i> Annuler
+                </a>
+                <button type="submit" class="btn-submit">
+                    <i class="bi bi-check-circle"></i> Créer le coupon
+                </button>
+            </div>
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}
+

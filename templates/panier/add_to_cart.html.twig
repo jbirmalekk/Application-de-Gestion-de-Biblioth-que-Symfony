@@ -5,7 +5,6 @@
 {% block stylesheets %}
     {{ parent() }}
     <style>
-        /* Override pour supprimer arrière-plan bleu de la page */
         .index-page main {
             background: #ffffff;
         }
@@ -262,18 +261,16 @@
 {% block body %}
 <div class="add-to-cart-container">
     <div class="add-to-cart-card">
-        <!-- Image du Livre -->
         <div class="book-image-section">
             <div class="book-image-container">
-                            {% if livre.image %}
-                                <img src="{{ asset('assets/img/books/' ~ livre.image) }}" alt="{{ livre.titre }}">
-                            {% else %}
-                                <div class="book-initial">{{ livre.titre|slice(0, 1)|upper }}</div>
-                            {% endif %}
+                {% if livre.image %}
+                    <img src="{{ asset('assets/img/books/' ~ livre.image) }}" alt="{{ livre.titre }}">
+                {% else %}
+                    <div class="book-initial">{{ livre.titre|slice(0, 1)|upper }}</div>
+                {% endif %}
             </div>
         </div>
 
-        <!-- Formulaire d'ajout -->
         <div class="form-section">
             <h1 class="book-title">{{ livre.titre }}</h1>
 
@@ -371,18 +368,22 @@
         }
     }
 
-    // Autoriser le clavier pour les chiffres seulement
-    document.getElementById('quantite').addEventListener('keypress', function(e) {
-        if (!/[0-9]/.test(e.key)) {
-            e.preventDefault();
-        }
-    });
+    document.addEventListener('DOMContentLoaded', function () {
+        const input = document.getElementById('quantite');
 
-    // S'assurer que la valeur reste dans les limites
-    document.getElementById('quantite').addEventListener('change', function(e) {
-        const max = parseInt(this.getAttribute('max'));
-        if (this.value < 1) this.value = 1;
-        if (this.value > max) this.value = max;
+        input.addEventListener('keypress', function (e) {
+            if (!/[0-9]/.test(e.key)) {
+                e.preventDefault();
+            }
+        });
+
+        input.addEventListener('change', function () {
+            const max = parseInt(this.getAttribute('max'));
+            if (this.value < 1) this.value = 1;
+            if (this.value > max) this.value = max;
+        });
     });
 </script>
 {% endblock %}
+
+

@@ -27,6 +27,9 @@ class Livre
     #[ORM\Column(type: 'float', precision: 10)]
     private ?float $prix = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $pdfPath = null;
+
     #[ORM\Column(type: 'date', nullable: true)]
     private ?\DateTimeInterface $datapub = null;
 
@@ -45,9 +48,16 @@ class Livre
     #[ORM\ManyToOne]
     private ?Categorie $categorie = null;
 
+    /**
+     * @var Collection<int, Avis>
+     */
+    #[ORM\OneToMany(targetEntity: Avis::class, mappedBy: 'livre', orphanRemoval: true)]
+    private Collection $avis;
+
     public function __construct()
     {
         $this->auteurs = new ArrayCollection();
+        $this->avis = new ArrayCollection();
     }
 
  
@@ -177,5 +187,45 @@ class Livre
         return $this;
     }
 
-   
+    /**
+     * @return Collection<int, Avis>
+     */
+    public function getAvis(): Collection
+    {
+        return $this->avis;
+    }
+
+    public function addAvi(Avis $avi): static
+    {
+        if (!$this->avis->contains($avi)) {
+            $this->avis->add($avi);
+            $avi->setLivre($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAvi(Avis $avi): static
+    {
+        if ($this->avis->removeElement($avi)) {
+            // set the owning side to null (unless already changed)
+            if ($avi->getLivre() === $this) {
+                $avi->setLivre(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getPdfPath(): ?string
+    {
+        return $this->pdfPath;
+    }
+
+    public function setPdfPath(?string $pdfPath): static
+    {
+        $this->pdfPath = $pdfPath;
+
+        return $this;
+    }
 }

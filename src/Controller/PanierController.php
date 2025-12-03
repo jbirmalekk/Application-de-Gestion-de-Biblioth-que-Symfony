@@ -27,14 +27,39 @@ final class PanierController extends AbstractController
     /**
      * Afficher le panier
      */
-    #[Route('/', name: 'index', methods: ['GET'])]
-    public function index(): Response
+    #[Route('/', name: 'index', methods: ['GET', 'POST'])]
+    public function index(Request $request): Response
     {
         $user = $this->getUser();
         $panier = $this->panierService->getPanierOrCreate($user);
+        $session = $request->getSession();
+
+        // Récupération / mise à jour du code promo saisi
+        if ($request->isMethod('POST') && $request->request->has('promo_code')) {
+            $promoCodeInput = trim($request->request->get('promo_code', ''));
+            if (!empty($promoCodeInput)) {
+                $session->set('cart_promo_code', $promoCodeInput);
+            } else {
+                $session->remove('cart_promo_code');
+            }
+            
+            // Rediriger pour éviter le re-POST et afficher les résultats
+            return $this->redirectToRoute('panier_index');
+        }
+
+        $promoCode = $session->get('cart_promo_code');
+        $cartSummary = $this->panierService->getCartSummary($panier, $promoCode);
+
+        // Messages éventuels liés au code promo (après redirection)
+        if ($promoCode && $cartSummary['promoError']) {
+            $this->addFlash('error', $cartSummary['promoError']);
+        } elseif ($promoCode && $cartSummary['promoCode'] && !$cartSummary['promoError']) {
+            $this->addFlash('success', $cartSummary['promoDescription'] ?? 'Code promo appliqué avec succès.');
+        }
 
         return $this->render('panier/index.html.twig', [
             'panier' => $panier,
+            'cartSummary' => $cartSummary,
         ]);
     }
 
@@ -46,42 +71,39 @@ final class PanierController extends AbstractController
         Livre $livre,
         Request $request,
     ): Response {
-        if ($request->isMethod('POST')) {
-            // Vérifier le token CSRF
-            if (!$this->isCsrfTokenValid('add_panier_' . $livre->getId(), $request->get('_token'))) {
-                return $this->json(['error' => 'Token invalide'], Response::HTTP_BAD_REQUEST);
-            }
-
-            $user = $this->getUser();
-            $quantite = max(1, (int) $request->get('quantite', 1));
-
-            try {
-                $panier = $this->panierService->getPanierOrCreate($user);
-                $this->panierService->addToCart($panier, $livre, $quantite);
-            } catch (\RuntimeException $e) {
-                $this->addFlash('error', $e->getMessage());
-                return $this->redirectToRoute('panier_ajouter', ['id' => $livre->getId()]);
-            }
-
-            if ($request->isXmlHttpRequest()) {
-                return $this->json([
-                    'success' => true,
-                    'message' => 'Livre ajouté au panier',
-                    'cartItemCount' => count($panier->getItems()),
-                    'cartTotal' => $panier->getTotal(),
-                ]);
-            }
-
-            $this->addFlash('success', $livre->getTitre() . ' ajouté au panier');
-
-            // Toujours rediriger vers la page du panier
-            return $this->redirectToRoute('panier_index');
+        // Si GET, afficher la page de sélection de quantité (optionnel)
+        if ($request->isMethod('GET')) {
+            return $this->render('panier/add_to_cart.html.twig', [
+                'livre' => $livre,
+            ]);
         }
 
-        // Afficher la page pour sélectionner la quantité
-        return $this->render('panier/add_to_cart.html.twig', [
-            'livre' => $livre,
-        ]);
+        // Si POST, ajouter au panier
+        // Vérifier que l'utilisateur est connecté
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        // Vérifier le token CSRF
+        $token = $request->get('_token');
+        if (!$this->isCsrfTokenValid('panier-add-' . $livre->getId(), $token)) {
+            $this->addFlash('error', 'Token de sécurité invalide. Veuillez réessayer.');
+            return $this->redirectToRoute('app_livre_show', ['id' => $livre->getId()]);
+        }
+
+        $quantite = max(1, (int) $request->get('quantite', 1));
+
+        try {
+            $panier = $this->panierService->getPanierOrCreate($user);
+            $this->panierService->addToCart($panier, $livre, $quantite);
+            $this->addFlash('success', sprintf('%s a été ajouté au panier', $livre->getTitre()));
+        } catch (\RuntimeException $e) {
+            $this->addFlash('error', $e->getMessage());
+            return $this->redirectToRoute('app_livre_show', ['id' => $livre->getId()]);
+        }
+
+        return $this->redirectToRoute('panier_index');
     }
 
     /**

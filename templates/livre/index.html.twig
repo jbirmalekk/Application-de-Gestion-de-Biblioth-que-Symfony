@@ -202,7 +202,12 @@
         }
 
         .btn-card-action.view:hover {
-            border-color: #10b981;
+            border-color:rgb(235, 37, 219);
+            background-color: #ecfdf5;
+        }
+
+        .btn-card-action.viewpanier:hover {
+            border-color: #2563eb;
             background-color: #ecfdf5;
         }
 
@@ -327,8 +332,15 @@
                                         <a href="{{ path('app_livre_show', {'id': book.id}) }}" 
                                            class="btn-card-action view" 
                                            title="Voir">
-                                            <i class="bi bi-eye"></i>
+                                            <i class="bi bi-eye" style="color:rgb(235, 37, 219);"></i>
                                         </a>
+                                        {% if is_granted('ROLE_USER') and book.qte > 0 %}
+                                            <a href="{{ path('panier_ajouter', {'id': book.id}) }}"
+                                               class="btn-card-action viewpanier"
+                                               title="Ajouter au panier">
+                                                <i class="bi bi-cart-plus" style="color: #2563eb;" ></i>
+                                            </a>
+                                        {% endif %}
                                         {% if is_granted('ROLE_ADMIN') %}
                                         <a href="{{ path('app_livre_edit', {'id': book.id}) }}" 
                                            class="btn-card-action edit" 

@@ -52,6 +52,15 @@ class LivreType extends AbstractType
                     'class' => 'form-control',
                 ]
             ])
+            ->add('pdfFile', FileType::class, [
+                'label' => 'Fichier PDF (optionnel)',
+                'required' => false,
+                'mapped' => false,
+                'attr' => [
+                    'accept' => 'application/pdf',
+                    'class' => 'form-control',
+                ]
+            ])
         ;
     }
 

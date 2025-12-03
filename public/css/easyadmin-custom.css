@@ -1,0 +1,26 @@
+/* Custom styles for EasyAdmin */
+
+/* Colorer les lignes des livres en rupture de stock */
+.datagrid tbody tr[data-stock="out-of-stock"] {
+    background-color: #fee2e2 !important;
+    border-left: 4px solid #dc2626 !important;
+}
+
+.datagrid tbody tr[data-stock="out-of-stock"]:hover {
+    background-color: #fca5a5 !important;
+}
+
+/* Colorer les lignes des livres avec stock faible */
+.datagrid tbody tr[data-stock="low-stock"] {
+    background-color: #fef3c7 !important;
+}
+
+.datagrid tbody tr[data-stock="low-stock"]:hover {
+    background-color: #fde047 !important;
+}
+
+/* Colorer les lignes des livres en stock normal */
+.datagrid tbody tr[data-stock="in-stock"]:hover {
+    background-color: rgba(0, 0, 0, 0.02) !important;
+}
+

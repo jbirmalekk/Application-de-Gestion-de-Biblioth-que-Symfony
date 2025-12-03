@@ -1,0 +1,343 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Finaliser ma commande{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .index-page main {
+            background: #ffffff;
+        }
+
+        .checkout-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .checkout-header {
+            background-color: #f9fafb;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e5e7eb;
+            border-radius: 6px;
+        }
+
+        .checkout-header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .checkout-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+        }
+
+        .checkout-form-section {
+            background: #ffffff;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+        }
+
+        .checkout-form-section h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.625rem 0.875rem;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-errors {
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .checkout-summary {
+            background: #ffffff;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .summary-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            color: #1f2937;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .summary-items {
+            margin-bottom: 1rem;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .summary-item-title {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.875rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .summary-row.total {
+            border-top: 1px solid #e5e7eb;
+            padding-top: 1rem;
+            margin-top: 0.5rem;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .summary-row.total span:last-child {
+            color: #1f2937;
+            font-size: 1.25rem;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            background-color: #1f2937;
+            color: white;
+            border: 1px solid #1f2937;
+            padding: 0.875rem 1rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 1.25rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .checkout-btn:hover {
+            background-color: #111827;
+            border-color: #111827;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .checkout-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #6b7280;
+            text-decoration: none;
+            font-size: 0.875rem;
+            margin-top: 1rem;
+        }
+
+        .back-link:hover {
+            color: #374151;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .checkout-content {
+                grid-template-columns: 1fr;
+            }
+
+            .checkout-summary {
+                position: static;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="checkout-container">
+    <div class="checkout-header">
+        <h1><i class="bi bi-truck"></i> Finaliser ma commande</h1>
+    </div>
+
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger" style="max-width: 1000px; margin: 0 auto 1.5rem auto; padding: 0.75rem 1rem; background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 4px; color: #991b1b; font-size: 0.875rem;">
+            <i class="bi bi-exclamation-triangle"></i> {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="checkout-content">
+        <div class="checkout-form-section">
+            <h2><i class="bi bi-geo-alt"></i> Adresse de livraison</h2>
+
+            {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                {% if form.vars.errors|length > 0 %}
+                    <div class="form-errors">
+                        <strong><i class="bi bi-exclamation-triangle"></i> Erreurs du formulaire :</strong>
+                        {{ form_errors(form) }}
+                    </div>
+                {% endif %}
+
+                <div class="form-group">
+                    {{ form_label(form.adresseLivraison) }}
+                    {{ form_widget(form.adresseLivraison) }}
+                    {{ form_errors(form.adresseLivraison) }}
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1rem;">
+                    <div class="form-group">
+                        {{ form_label(form.codePostal) }}
+                        {{ form_widget(form.codePostal) }}
+                        {{ form_errors(form.codePostal) }}
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.ville) }}
+                        {{ form_widget(form.ville) }}
+                        {{ form_errors(form.ville) }}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.pays) }}
+                    {{ form_widget(form.pays) }}
+                    {{ form_errors(form.pays) }}
+                </div>
+
+                <h2 style="font-size:1.1rem; font-weight:600; color:#1f2937; margin:2rem 0 1rem;">
+                    <i class="bi bi-credit-card-2-front"></i> Paiement
+                </h2>
+
+                <div class="form-group">
+                    {{ form_label(form.methodePaiement) }}
+                    {{ form_widget(form.methodePaiement) }}
+                    {{ form_errors(form.methodePaiement) }}
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <a href="{{ path('panier_index') }}" class="back-link">
+                        <i class="bi bi-arrow-left"></i> Retour au panier
+                    </a>
+                    <button type="submit" class="checkout-btn" style="margin-left: auto;">
+                        <i class="bi bi-check-circle"></i> Confirmer la commande
+                    </button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+
+        <div class="checkout-summary">
+            <div class="summary-title">Résumé de la commande</div>
+
+            <div class="summary-items">
+                {% for item in panier.items %}
+                    <div class="summary-item">
+                        <span class="summary-item-title">{{ item.livre.titre }}</span>
+                        <span>{{ (item.prixUnitaire * item.quantite)|number_format(2, ',', ' ') }} €</span>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="summary-row">
+                <span>Sous-total ({{ panier.items|length }} article{{ panier.items|length > 1 ? 's' : '' }}):</span>
+                <span>
+                    {% if cartSummary is defined and cartSummary.subtotal is defined %}
+                        {{ cartSummary.subtotal|number_format(2, ',', ' ') }} €
+                    {% else %}
+                        {{ panier.total|number_format(2, ',', ' ') }} €
+                    {% endif %}
+                </span>
+            </div>
+
+            {% if cartSummary is defined and cartSummary.discount > 0 %}
+                <div class="summary-row" style="color: #16a34a;">
+                    <span>Remise:</span>
+                    <span>- {{ cartSummary.discount|number_format(2, ',', ' ') }} €</span>
+                </div>
+            {% endif %}
+
+            <div class="summary-row">
+                <span>Livraison:</span>
+                <span>
+                    {% if cartSummary is defined and cartSummary.shipping is defined %}
+                        {% if cartSummary.shipping == 0 %}
+                            Gratuite
+                        {% else %}
+                            {{ cartSummary.shipping|number_format(2, ',', ' ') }} €
+                        {% endif %}
+                    {% else %}
+                        À calculer
+                    {% endif %}
+                </span>
+            </div>
+
+            <div class="summary-row">
+                <span>Taxes:</span>
+                <span>Incluses</span>
+            </div>
+
+            <div class="summary-row total">
+                <span>Total:</span>
+                <span>
+                    {% if cartSummary is defined and cartSummary.total is defined %}
+                        {{ cartSummary.total|number_format(2, ',', ' ') }} €
+                    {% else %}
+                        {{ panier.total|number_format(2, ',', ' ') }} €
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

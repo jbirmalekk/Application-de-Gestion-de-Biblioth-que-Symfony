@@ -617,15 +617,28 @@
                                             {% if book.editeur %}
                                                 <br><small>{{ book.editeur.nom }}</small>
                                             {% endif %}
+                                            <br>
+                                            <span style="font-weight: 600; color: #111827;">
+                                                {{ book.prix|number_format(2, ',', '.') }} €
+                                            </span>
                                         </p>
                                         <div class="blog-footer">
-                                            <div class="reading-time">
-                                                {{ book.prix|number_format(2, ',', '.') }} €
+                                            <div style="display: flex; gap: 0.5rem;">
+                                                <a href="{{ path('app_livre_show', {'id': book.id}) }}"
+                                                   class="btn-read-more"
+                                                   style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">
+                                                    <span>Détails</span>
+                                                    <i class="bi bi-arrow-right"></i>
+                                                </a>
+                                                {% if is_granted('ROLE_USER') and book.qte > 0 %}
+                                                    <a href="{{ path('panier_ajouter', {'id': book.id}) }}"
+                                                       class="btn-read-more"
+                                                       style="background-color: #1f2937; border-color: #1f2937;"
+                                                       title="Ajouter au panier">
+                                                        <i class="bi bi-cart-plus"></i>
+                                                    </a>
+                                                {% endif %}
                                             </div>
-                                            <a href="{{ path('app_livre_show', {'id': book.id}) }}" class="btn-read-more">
-                                                <span>Détails</span>
-                                                <i class="bi bi-arrow-right"></i>
-                                            </a>
                                         </div>
                                     </div>
                                 </div>

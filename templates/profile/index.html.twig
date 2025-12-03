@@ -1,0 +1,208 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon profil{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .index-page main {
+            background: #ffffff;
+        }
+
+        .profile-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .profile-header {
+            background-color: #f9fafb;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e5e7eb;
+            border-radius: 6px;
+        }
+
+        .profile-header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .profile-card {
+            background: #ffffff;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+        }
+
+        .profile-card h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .form-section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.625rem 0.875rem;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-errors {
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .profile-info {
+            background: #f9fafb;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .profile-info strong {
+            color: #374151;
+        }
+
+        .btn-submit {
+            background-color: #1f2937;
+            color: white;
+            border: 1px solid #1f2937;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-submit:hover {
+            background-color: #111827;
+            border-color: #111827;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="profile-container">
+    <div class="profile-header">
+        <h1><i class="bi bi-person-circle"></i> Mon profil</h1>
+    </div>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success" style="max-width: 800px; margin: 0 auto 1.5rem auto; padding: 0.75rem 1rem; background-color: #ecfdf3; border: 1px solid #bbf7d0; border-radius: 4px; color: #166534; font-size: 0.875rem;">
+            <i class="bi bi-check-circle"></i> {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger" style="max-width: 800px; margin: 0 auto 1.5rem auto; padding: 0.75rem 1rem; background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 4px; color: #991b1b; font-size: 0.875rem;">
+            <i class="bi bi-exclamation-triangle"></i> {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="profile-card">
+        <h2>Informations personnelles</h2>
+
+        <div class="profile-info">
+            <strong>Rôle:</strong> 
+            {% if 'ROLE_ADMIN' in user.roles %}
+                Administrateur
+            {% else %}
+                Utilisateur
+            {% endif %}
+            <br>
+            <strong>Compte créé le:</strong> 
+            {% if user.id %}
+                {{ 'now'|date('d/m/Y') }}
+            {% else %}
+                Non disponible
+            {% endif %}
+        </div>
+
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+            {% if form.vars.errors|length > 0 %}
+                <div class="form-errors">
+                    <strong><i class="bi bi-exclamation-triangle"></i> Erreurs du formulaire :</strong>
+                    {{ form_errors(form) }}
+                </div>
+            {% endif %}
+
+            <div class="form-group">
+                {{ form_label(form.email) }}
+                {{ form_widget(form.email) }}
+                {{ form_errors(form.email) }}
+            </div>
+
+            <div class="form-section-title">Sécurité du compte</div>
+
+            <div class="form-group">
+                {{ form_label(form.currentPassword) }}
+                {{ form_widget(form.currentPassword) }}
+                {{ form_errors(form.currentPassword) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.newPassword) }}
+                {{ form_widget(form.newPassword) }}
+                {{ form_errors(form.newPassword) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.confirmPassword) }}
+                {{ form_widget(form.confirmPassword) }}
+                {{ form_errors(form.confirmPassword) }}
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <i class="bi bi-check-circle"></i> Enregistrer les modifications
+            </button>
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}
+

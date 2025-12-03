@@ -18,6 +18,7 @@
                         <li><a href="{{ path('app_livre_new') }}">Ajouter un livre</a></li>
                         <li><a href="{{ path('app_auteur_new') }}">Ajouter un auteur</a></li>
                         <li><a href="{{ path('app_categorie_index') }}">Catégories</a></li>
+                        <li><a href="{{ path('admin_coupons_index') }}">Coupons</a></li>
                     </ul>
                 </li>
                 {% endif %}
@@ -27,10 +28,46 @@
         </nav>
 
         <div class="header-social-links d-flex align-items-center gap-3">
-            <a href="#" class="twitter"><i class="bi bi-twitter-x"></i></a>
-            <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
-            <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
-            <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
+
+            {# Icônes Wishlist / Notifications / Panier (utilisateur connecté) #}
+            {% if is_granted('ROLE_USER') %}
+                {# Notifications #}
+                {% set notif_count = unread_notifications_count() %}
+                <a href="{{ path('notifications_index') }}"
+                   class="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center position-relative"
+                   style="border-radius: 999px; width: 34px; height: 34px; padding: 0;"
+                   title="Mes notifications">
+                    <i class="bi bi-bell"></i>
+                    {% if notif_count > 0 %}
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                              style="font-size: 0.65rem; padding: 0.15em 0.4em;">
+                            {{ notif_count }}
+                        </span>
+                    {% endif %}
+                </a>
+
+                {# Wishlist #}
+                {% set wishlist_count = wishlist_count() %}
+                <a href="{{ path('wishlist_index') }}"
+                   class="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center position-relative"
+                   style="border-radius: 999px; width: 34px; height: 34px; padding: 0;"
+                   title="Voir mes favoris">
+                    <i class="bi bi-heart"></i>
+                    {% if wishlist_count > 0 %}
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" 
+                              style="font-size: 0.65rem; padding: 0.15em 0.4em;">
+                            {{ wishlist_count }}
+                        </span>
+                    {% endif %}
+                </a>
+
+                <a href="{{ path('panier_index') }}"
+                   class="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center"
+                   style="border-radius: 999px; width: 34px; height: 34px; padding: 0;"
+                   title="Voir mon panier">
+                    <i class="bi bi-cart3"></i>
+                </a>
+            {% endif %}
             
             <!-- Bouton Login/Logout -->
             <div class="auth-buttons" style="border-left: 1px solid #e0e0e0; padding-left: 15px; margin-left: 5px;">
@@ -45,6 +82,19 @@
                             <i class="bi bi-person-circle"></i> {{ app.user.userIdentifier|split('@')|first }}
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
+                            {% if is_granted('ROLE_USER') %}
+                                <li>
+                                    <a class="dropdown-item" href="{{ path('profile_index') }}">
+                                        <i class="bi bi-person-circle"></i> Mon profil
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ path('commande_mes_commandes') }}">
+                                        <i class="bi bi-receipt-cutoff"></i> Mes commandes
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                            {% endif %}
                             {% if is_granted('ROLE_ADMIN') %}
                                 <li>
                                     <a class="dropdown-item" href="{{ path('admin') }}">

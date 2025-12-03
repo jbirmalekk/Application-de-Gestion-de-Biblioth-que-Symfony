@@ -1,0 +1,302 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Commande #{{ commande.id }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .order-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .order-card {
+            background: #ffffff;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .order-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .order-header h1 {
+            margin: 0;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .order-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+        }
+
+        .status-en_attente { background-color: #fef3c7; color: #92400e; }
+        .status-validee   { background-color: #dcfce7; color: #166534; }
+        .status-expediee  { background-color: #e0f2fe; color: #075985; }
+        .status-livree    { background-color: #e5e7eb; color: #374151; }
+        .status-annulee   { background-color: #fee2e2; color: #b91c1c; }
+
+        .order-body {
+            padding: 1.5rem;
+        }
+
+        /* User Info Block */
+        .user-info-block {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: #f0f9ff;
+            border-radius: 4px;
+            border-left: 4px solid #0284c7;
+            font-size: 0.875rem;
+            color: #1e293b;
+        }
+
+        .user-info-block h3 {
+            margin: 0 0 0.75rem 0;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #0284c7;
+        }
+
+        .user-info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.35rem;
+        }
+
+        .user-info-label {
+            font-weight: 500;
+            color: #475569;
+        }
+
+        .user-info-value {
+            color: #1e293b;
+            font-weight: 500;
+        }
+
+        /* Shipping Info Block */
+        .shipping-block {
+            margin-bottom: 1.5rem;
+            padding: 0.75rem 1rem;
+            background: #f9fafb;
+            border-radius: 4px;
+            border: 1px solid #e5e7eb;
+            font-size: 0.875rem;
+            color: #4b5563;
+        }
+
+        .shipping-block strong {
+            color: #1e293b;
+        }
+
+        /* Order Items Table */
+        .order-items-header,
+        .order-item-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 0.75rem;
+            font-size: 0.875rem;
+            align-items: center;
+        }
+
+        .order-items-header {
+            font-weight: 600;
+            color: #4b5563;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .order-item-row {
+            padding: 0.35rem 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .order-summary {
+            margin-top: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 1rem;
+            text-align: right;
+            font-size: 0.95rem;
+        }
+
+        .order-summary strong {
+            font-size: 1.1rem;
+            color: #111827;
+        }
+
+        .order-back {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .order-back a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.875rem;
+            color: #374151;
+            text-decoration: none;
+        }
+
+        .order-back a:hover {
+            text-decoration: underline;
+        }
+
+        .btn-print {
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+            background: #111827;
+            color: #ffffff;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-print:hover {
+            background-color: #1f2937;
+        }
+
+        @media print {
+            .order-back { display: none; }
+            body > header, 
+            body > footer, 
+            .header, 
+            .footer { display: none !important; }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="order-container">
+    <div class="order-card">
+        <!-- En-tête de la commande -->
+        <div class="order-header">
+            <div>
+                <h1>Commande #{{ commande.id }}</h1>
+                <div style="font-size: 0.85rem; color: #6b7280; margin-top: 0.25rem;">
+                    Passée le {{ commande.createdAt ? commande.createdAt|date('d/m/Y H:i') : '' }}
+                </div>
+            </div>
+            <div style="text-align:right;">
+                <span class="order-status status-{{ commande.statut }}">
+                    {{ commande.statut|replace({
+                        'en_attente': 'En attente',
+                        'validee': 'Validée',
+                        'expediee': 'Expédiée',
+                        'livree': 'Livrée',
+                        'annulee': 'Annulée'
+                    }) }}
+                </span>
+                {% if commande.methodePaiement %}
+                    <div style="font-size:0.8rem; color:#6b7280; margin-top:0.5rem;">
+                        <i class="bi bi-credit-card-2-front"></i>
+                        Paiement : 
+                        {{ commande.methodePaiement == 'carte' ? 'Carte bancaire' :
+                           (commande.methodePaiement == 'paypal' ? 'PayPal' :
+                           (commande.methodePaiement == 'virement' ? 'Virement bancaire' :
+                           (commande.methodePaiement == 'domicile' ? 'Paiement à domicile' : commande.methodePaiement))) }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Corps de la commande -->
+        <div class="order-body">
+            <!-- Informations Client -->
+            <div class="user-info-block">
+                <h3>📋 Informations Client</h3>
+                <div class="user-info-row">
+                    <span class="user-info-label">Email :</span>
+                    <span class="user-info-value">{{ commande.user.email }}</span>
+                </div>
+                <div class="user-info-row">
+                    <span class="user-info-label">ID Client :</span>
+                    <span class="user-info-value">#{{ commande.user.id }}</span>
+                </div>
+                <div class="user-info-row">
+                    <span class="user-info-label">Rôles :</span>
+                    <span class="user-info-value">
+                        {% if 'ROLE_ADMIN' in commande.user.roles %}
+                            Administrateur
+                        {% else %}
+                            Utilisateur
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Adresse de livraison -->
+            {% if commande.adresseLivraison or commande.ville or commande.codePostal or commande.pays %}
+                <div class="shipping-block">
+                    <strong>📍 Adresse de livraison :</strong><br>
+                    {{ commande.adresseLivraison }}<br>
+                    {{ commande.codePostal }} {{ commande.ville }}{% if commande.pays %}, {{ commande.pays }}{% endif %}
+                </div>
+            {% endif %}
+
+            <!-- Articles commandés -->
+            <div class="order-items-header">
+                <div>Article</div>
+                <div>Prix unitaire</div>
+                <div>Quantité</div>
+                <div>Sous-total</div>
+            </div>
+
+            {% for item in commande.items %}
+                <div class="order-item-row">
+                    <div>
+                        <strong>{{ item.livre.titre }}</strong>
+                    </div>
+                    <div>{{ item.prixUnitaire|number_format(2, ',', ' ') }} €</div>
+                    <div style="text-align: center;">{{ item.quantite }}</div>
+                    <div style="text-align: right;">{{ item.subTotal|number_format(2, ',', ' ') }} €</div>
+                </div>
+            {% endfor %}
+
+            <!-- Résumé du total -->
+            <div class="order-summary">
+                <div style="margin-bottom: 0.5rem; color: #6b7280;">
+                    Nombre d'articles : {{ commande.items|length }}
+                </div>
+                <div>
+                    Total payé : <strong>{{ commande.total|number_format(2, ',', ' ') }} €</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="order-back">
+        <a href="{{ path('commande_mes_commandes') }}">
+            <i class="bi bi-arrow-left"></i> Retour à mes commandes
+        </a>
+        <button type="button" class="btn-print" onclick="window.print()">
+            <i class="bi bi-file-earmark-pdf"></i> Télécharger / Imprimer en PDF
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+

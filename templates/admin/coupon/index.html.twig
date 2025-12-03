@@ -1,0 +1,279 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des coupons{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .index-page main {
+            background: #ffffff;
+        }
+
+        .admin-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .admin-header h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+        }
+
+        .btn-new {
+            background-color: #1f2937;
+            color: white;
+            border: 1px solid #1f2937;
+            padding: 0.625rem 1.25rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-new:hover {
+            background-color: #111827;
+            color: white;
+        }
+
+        .coupons-table {
+            background: #ffffff;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1.5fr;
+            padding: 1rem;
+            background: #f9fafb;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #4b5563;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1.5fr;
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            align-items: center;
+            font-size: 0.875rem;
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .table-row:hover {
+            background: #f9fafb;
+        }
+
+        .badge-code {
+            font-family: 'Monaco', 'Menlo', monospace;
+            background: #f3f4f6;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .badge-type {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .type-percentage {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .type-fixed {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .type-free_shipping {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-expired {
+            background: #e5e7eb;
+            color: #6b7280;
+        }
+
+        .btn-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-edit {
+            background: #ffffff;
+            color: #16a34a;
+            border: 1px solid #16a34a;
+            padding: 0.375rem 0.75rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.75rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-edit:hover {
+            background: #f0fdf4;
+        }
+
+        .btn-delete {
+            background: #ffffff;
+            color: #dc2626;
+            border: 1px solid #dc2626;
+            padding: 0.375rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-delete:hover {
+            background: #fef2f2;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: #6b7280;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="admin-container">
+    <div class="admin-header">
+        <h1><i class="bi bi-ticket-perforated"></i> Gestion des coupons</h1>
+        <a href="{{ path('admin_coupons_new') }}" class="btn-new">
+            <i class="bi bi-plus-circle"></i> Nouveau coupon
+        </a>
+    </div>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success" style="margin-bottom: 1.5rem; padding: 0.75rem 1rem; background-color: #ecfdf3; border: 1px solid #bbf7d0; border-radius: 4px; color: #166534; font-size: 0.875rem;">
+            <i class="bi bi-check-circle"></i> {{ message }}
+        </div>
+    {% endfor %}
+
+    {% if coupons is not empty %}
+        <div class="coupons-table">
+            <div class="table-header">
+                <div>Code</div>
+                <div>Type</div>
+                <div>Valeur</div>
+                <div>Montant min</div>
+                <div>Usage</div>
+                <div>Statut</div>
+                <div>Actions</div>
+            </div>
+            {% for coupon in coupons %}
+                <div class="table-row">
+                    <div>
+                        <span class="badge-code">{{ coupon.code }}</span>
+                    </div>
+                    <div>
+                        <span class="badge-type type-{{ coupon.type }}">
+                            {% if coupon.type == 'percentage' %}Pourcentage
+                            {% elseif coupon.type == 'fixed' %}Montant fixe
+                            {% else %}Livraison gratuite
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div>
+                        {% if coupon.type == 'percentage' %}
+                            {{ coupon.valeur }}%
+                        {% elseif coupon.type == 'fixed' %}
+                            {{ coupon.valeur|number_format(2, ',', ' ') }} €
+                        {% else %}
+                            —
+                        {% endif %}
+                    </div>
+                    <div>
+                        {% if coupon.montantMinimum %}
+                            {{ coupon.montantMinimum|number_format(2, ',', ' ') }} €
+                        {% else %}
+                            —
+                        {% endif %}
+                    </div>
+                    <div>
+                        {% if coupon.usageMax %}
+                            {{ coupon.usageActuel }} / {{ coupon.usageMax }}
+                        {% else %}
+                            {{ coupon.usageActuel }} / ∞
+                        {% endif %}
+                    </div>
+                    <div>
+                        {% if not coupon.isValid() %}
+                            <span class="badge-status status-expired">Expiré/Épuisé</span>
+                        {% elseif coupon.actif %}
+                            <span class="badge-status status-active">Actif</span>
+                        {% else %}
+                            <span class="badge-status status-inactive">Inactif</span>
+                        {% endif %}
+                    </div>
+                    <div class="btn-actions">
+                        <a href="{{ path('admin_coupons_edit', {'id': coupon.id}) }}" class="btn-edit">
+                            <i class="bi bi-pencil"></i> Modifier
+                        </a>
+                        <form method="POST" action="{{ path('admin_coupons_delete', {'id': coupon.id}) }}" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce coupon ?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete_coupon_' ~ coupon.id) }}">
+                            <button type="submit" class="btn-delete">
+                                <i class="bi bi-trash"></i> Supprimer
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <p>Aucun coupon créé pour le moment.</p>
+            <a href="{{ path('admin_coupons_new') }}" class="btn-new" style="margin-top: 1rem;">
+                <i class="bi bi-plus-circle"></i> Créer le premier coupon
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+

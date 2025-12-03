@@ -1,0 +1,246 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Laisser un avis - {{ livre.titre }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="avis-container" style="max-width: 800px; margin: 0 auto;">
+        <div class="avis-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 12px 12px 0 0; text-align: center;">
+            <h1 style="font-size: 2rem; font-weight: 700; margin: 0; margin-bottom: 0.5rem;">
+                <i class="fas fa-star"></i> Votre avis
+            </h1>
+            <p style="font-size: 1.1rem; margin: 0; opacity: 0.95;">
+                {{ livre.titre }}
+            </p>
+        </div>
+
+        <div style="background: white; border: 1px solid #e5e7eb; border-radius: 0 0 12px 12px; padding: 2rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+            
+            <div style="background: linear-gradient(135deg, #fafbfc 0%, #f5f6f8 100%); border-left: 4px solid #667eea; padding: 1rem; border-radius: 6px; margin-bottom: 2rem;">
+                <p style="margin: 0; color: #4b5563; font-size: 0.95rem;">
+                    <i class="fas fa-info-circle"></i>
+                    Votre avis sera publié après modération par un administrateur.
+                </p>
+            </div>
+
+            {{ form_start(form, {'attr': {'class': 'avis-form', 'novalidate': 'novalidate'}}) }}
+            
+                {# Hidden note field #}
+                <div style="display: none;">
+                    {{ form_widget(form.note) }}
+                </div>
+                
+                {# Visual note selector #}
+                <div class="form-group mb-4">
+                    <label style="display: block; font-weight: 600; color: #667eea; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.75rem;">
+                        Votre note
+                        <span style="color: #dc2626;">*</span>
+                    </label>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.75rem;">
+                        {% for i in 1..5 %}
+                            <label style="display: flex; align-items: center; justify-content: center; padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; background: white;" 
+                                   id="note-label-{{ i }}"
+                                   class="note-label">
+                                <input type="radio" 
+                                       id="avis_note_{{ i }}"
+                                       name="avis[note]" 
+                                       value="{{ i }}"
+                                       {% if form.note.vars.value == i %}checked="checked"{% endif %}
+                                       style="margin-right: 0.75rem; cursor: pointer; width: 18px; height: 18px;"
+                                       required>
+                                <span style="font-weight: 600; color: #374151; white-space: nowrap;">
+                                    <i class="fas fa-star" style="color: #fbbf24; margin-right: 0.25rem;"></i>{{ i }}
+                                </span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                    
+                    {% if form.note.vars.errors|length > 0 %}
+                        <div style="color: #dc2626; font-size: 0.875rem; margin-top: 0.5rem;">
+                            {% for error in form.note.vars.errors %}
+                                <p style="margin: 0;">{{ error.message }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                {# Texte Field #}
+                    
+                    {{ form_widget(form.texte, {
+                        'attr': {
+                            'class': 'form-control',
+                            'style': 'border: 1px solid #e5e7eb; border-radius: 6px; padding: 0.75rem; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; resize: vertical;'
+                        }
+                    }) }}
+                    
+                    <small style="display: block; color: #6b7280; margin-top: 0.5rem;">
+                        <span id="char-count">0</span> / 1000 caractères
+                    </small>
+                    
+                    {% if form.texte.vars.errors|length > 0 %}
+                        <div style="color: #dc2626; font-size: 0.875rem; margin-top: 0.5rem;">
+                            {% for error in form.texte.vars.errors %}
+                                <p style="margin: 0;">{{ error.message }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #e5e7eb;">
+                    <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 0.75rem 2rem; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                        <i class="fas fa-paper-plane"></i> Soumettre mon avis
+                    </button>
+                    
+                    <a href="{{ path('app_livre_show', {'id': livre.id}) }}" class="btn btn-secondary" style="background: #f3f4f6; color: #6b7280; border: 1px solid #d1d5db; padding: 0.75rem 2rem; border-radius: 6px; font-weight: 600; text-decoration: none; transition: all 0.3s ease;">
+                        <i class="fas fa-times"></i> Annuler
+                    </a>
+                </div>
+
+            {{ form_end(form) }}
+        </div>
+
+        <div style="margin-top: 2rem; padding: 1.5rem; background: #fef3c7; border: 1px solid #fcd34d; border-radius: 6px;">
+            <p style="margin: 0; color: #d97706; font-size: 0.9rem;">
+                <i class="fas fa-lightbulb"></i>
+                <strong>Conseil :</strong> Soyez honnête et constructif. Votre avis aide les autres lecteurs à faire leur choix.
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .avis-container {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    .form-group label {
+        margin-bottom: 0.75rem;
+    }
+
+    .form-control {
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        padding: 0.75rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        outline: none;
+    }
+
+    .btn-primary:hover {
+        box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+        transform: translateY(-2px);
+    }
+
+    .btn-secondary:hover {
+        background: #e5e7eb;
+        border-color: #9ca3af;
+        color: #374151;
+    }
+
+    input[type="radio"] {
+        cursor: pointer;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Character counter for textarea
+    const textarea = document.querySelector('textarea[name*="texte"]');
+    const charCount = document.getElementById('char-count');
+    
+    if (textarea && charCount) {
+        function updateCharCount() {
+            charCount.textContent = textarea.value.length;
+        }
+        
+        textarea.addEventListener('input', updateCharCount);
+        updateCharCount();
+    }
+
+    // Radio button styling and synchronization
+    const radioButtons = document.querySelectorAll('input[name="avis[note]"]');
+    const hiddenNoteField = document.querySelector('select[name="avis[note]"]');
+    
+    function updateNoteDisplay(checkedValue) {
+        radioButtons.forEach(radio => {
+            const label = radio.closest('label');
+            if (label) {
+                if (radio.checked) {
+                    label.style.borderColor = '#667eea';
+                    label.style.backgroundColor = '#ede9fe';
+                    label.style.fontWeight = '700';
+                    // Update hidden field
+                    if (hiddenNoteField) {
+                        hiddenNoteField.value = radio.value;
+                    }
+                } else {
+                    label.style.borderColor = '#e5e7eb';
+                    label.style.backgroundColor = 'white';
+                    label.style.fontWeight = '600';
+                }
+            }
+        });
+    }
+    
+    // Initialize display
+    updateNoteDisplay();
+    
+    // Add change listeners
+    radioButtons.forEach(radio => {
+        radio.addEventListener('change', function() {
+            updateNoteDisplay(this.value);
+        });
+    });
+
+    // Form validation and submission
+    const form = document.querySelector('.avis-form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            // Sync radio button value to hidden field before submit
+            const noteChecked = document.querySelector('input[name="avis[note]"]:checked');
+            if (noteChecked && hiddenNoteField) {
+                hiddenNoteField.value = noteChecked.value;
+            }
+            
+            const texte = document.querySelector('textarea[name*="texte"]');
+            
+            // Validation
+            if (!noteChecked) {
+                e.preventDefault();
+                alert('Veuillez sélectionner une note (1 à 5 étoiles)');
+                return false;
+            }
+            
+            if (!texte || texte.value.trim().length === 0) {
+                e.preventDefault();
+                alert('Veuillez écrire votre avis');
+                return false;
+            }
+            
+            if (texte.value.length < 10) {
+                e.preventDefault();
+                alert('Votre avis doit contenir au moins 10 caractères');
+                return false;
+            }
+            
+            if (texte.value.length > 1000) {
+                e.preventDefault();
+                alert('Votre avis ne peut pas dépasser 1000 caractères');
+                return false;
+            }
+            
+            return true;
+        });
+    }
+});
+</script>
+{% endblock %}

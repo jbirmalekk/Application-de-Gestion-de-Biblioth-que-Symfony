@@ -86,20 +86,20 @@
             <div class="col-lg-3 col-md-6 mb-3">
                 <div class="card stat-card text-white bg-success h-100">
                     <div class="card-body position-relative">
-                        <i class="fas fa-pen-fancy stat-icon"></i>
-                        <p class="stat-label">Auteurs</p>
-                        <div class="stat-number">{{ auteurCount }}</div>
-                        <small class="text-white-50">Écrivains référencés</small>
+                        <i class="fas fa-check-circle stat-icon"></i>
+                        <p class="stat-label">Livres en Stock</p>
+                        <div class="stat-number">{{ livreEnStockCount }}</div>
+                        <small class="text-white-50">Disponibles</small>
                     </div>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6 mb-3">
-                <div class="card stat-card text-white bg-info h-100">
+                <div class="card stat-card text-white bg-danger h-100">
                     <div class="card-body position-relative">
-                        <i class="fas fa-building stat-icon"></i>
-                        <p class="stat-label">Éditeurs</p>
-                        <div class="stat-number">{{ editeurCount }}</div>
-                        <small class="text-white-50">Maisons d'édition</small>
+                        <i class="fas fa-times-circle stat-icon"></i>
+                        <p class="stat-label">Rupture de Stock</p>
+                        <div class="stat-number">{{ livreHorsStockCount }}</div>
+                        <small class="text-white-50">Indisponibles</small>
                     </div>
                 </div>
             </div>

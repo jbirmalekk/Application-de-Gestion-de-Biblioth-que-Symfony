@@ -1,0 +1,594 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Panier{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .index-page main {
+            background: #ffffff;
+        }
+
+        .panier-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            min-height: 60vh;
+        }
+
+        .panier-header {
+            background-color: #f9fafb;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e5e7eb;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panier-header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .panier-header p {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin: 0;
+        }
+
+        .panier-content {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 1.5rem;
+        }
+
+        .panier-items {
+            background: #ffffff;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .panier-item {
+            display: flex;
+            gap: 1.25rem;
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            align-items: flex-start;
+            transition: background-color 0.2s ease;
+        }
+
+        .panier-item:last-child {
+            border-bottom: none;
+        }
+
+        .panier-item:hover {
+            background-color: #f9fafb;
+        }
+
+        .item-image {
+            width: 100px;
+            height: 130px;
+            flex-shrink: 0;
+            border-radius: 4px;
+            overflow: hidden;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+        }
+
+        .item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .item-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 130px;
+        }
+
+        .item-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .item-author {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+
+        .item-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: auto;
+            gap: 1rem;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 0.25rem;
+            background: #ffffff;
+        }
+
+        .quantity-control button {
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            border: none;
+            background: #f9fafb;
+            cursor: pointer;
+            font-size: 0.875rem;
+            border-radius: 3px;
+            transition: all 0.2s ease;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quantity-control button:hover {
+            background: #e5e7eb;
+            color: #1f2937;
+        }
+
+        .quantity-control input {
+            width: 40px;
+            text-align: center;
+            border: none;
+            background: transparent;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #1f2937;
+        }
+
+        .item-price-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.5rem;
+        }
+
+        .price-value {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .btn-remove {
+            background: #ffffff;
+            color: #dc2626;
+            border: 1px solid #d1d5db;
+            padding: 0.5rem 0.875rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-remove:hover {
+            background: #fef2f2;
+            border-color: #dc2626;
+            color: #b91c1c;
+        }
+
+        .panier-summary {
+            background: #ffffff;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .summary-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            color: #1f2937;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.875rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .summary-row.total {
+            border-top: 1px solid #e5e7eb;
+            padding-top: 1rem;
+            margin-top: 0.5rem;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .summary-row.total span:last-child {
+            color: #1f2937;
+            font-size: 1.25rem;
+        }
+
+        .promo-form {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px dashed #e5e7eb;
+        }
+
+        .promo-label {
+            display: block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #9ca3af;
+            margin-bottom: 0.5rem;
+        }
+
+        .promo-input-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .promo-input-group input {
+            flex: 1;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+        }
+
+        .promo-input-group button {
+            border-radius: 4px;
+            border: 1px solid #1f2937;
+            background: #1f2937;
+            color: #ffffff;
+            padding: 0.5rem 0.875rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .promo-help {
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            background-color: #1f2937;
+            color: white;
+            border: 1px solid #1f2937;
+            padding: 0.875rem 1rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 1.25rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .checkout-btn:hover {
+            background-color: #111827;
+            border-color: #111827;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .clear-btn {
+            width: 100%;
+            background: #ffffff;
+            color: #6b7280;
+            border: 1px solid #d1d5db;
+            padding: 0.75rem 1rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 0.75rem;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .clear-btn:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+            color: #374151;
+        }
+
+        .empty-panier {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 4rem 2rem;
+            background: #ffffff;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
+        .empty-panier-icon {
+            font-size: 4rem;
+            color: #d1d5db;
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-panier-title {
+            font-size: 1.5rem;
+            color: #1f2937;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .empty-panier-text {
+            color: #6b7280;
+            margin-bottom: 2rem;
+            font-size: 0.875rem;
+        }
+
+        .continue-shopping-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: #1f2937;
+            color: white;
+            border: 1px solid #1f2937;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .continue-shopping-btn:hover {
+            background-color: #111827;
+            border-color: #111827;
+            color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .panier-content {
+                grid-template-columns: 1fr;
+            }
+
+            .panier-summary {
+                position: static;
+            }
+
+            .item-image {
+                width: 80px;
+                height: 110px;
+            }
+
+            .item-details {
+                min-height: 110px;
+            }
+
+            .panier-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="panier-container">
+    <div class="panier-header">
+        <div>
+            <h1><i class="bi bi-cart3"></i> Mon Panier</h1>
+            <p>Gérez vos articles, appliquez un code promo et estimez le total de votre commande</p>
+        </div>
+    </div>
+
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger" style="max-width: 1200px; margin: 0 auto 1.5rem auto; padding: 0.75rem 1rem; background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 4px; color: #991b1b; font-size: 0.875rem;">
+            <i class="bi bi-exclamation-triangle"></i> {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success" style="max-width: 1200px; margin: 0 auto 1.5rem auto; padding: 0.75rem 1rem; background-color: #ecfdf3; border: 1px solid #bbf7d0; border-radius: 4px; color: #166534; font-size: 0.875rem;">
+            <i class="bi bi-check-circle"></i> {{ message }}
+        </div>
+    {% endfor %}
+
+    {% if panier and panier.items|length > 0 %}
+        <div class="panier-content">
+            <div class="panier-items">
+                {% for item in panier.items %}
+                    <div class="panier-item">
+                        <div class="item-image">
+                            {% if item.livre.image %}
+                                <img src="{{ asset('assets/img/books/' ~ item.livre.image) }}" alt="{{ item.livre.titre }}">
+                            {% else %}
+                                <div style="width: 100%; height: 100%; background: #f3f4f6; display: flex; align-items: center; justify-content: center; color: #9ca3af; font-weight: 600; font-size: 2rem;">
+                                    {{ item.livre.titre|slice(0, 1)|upper }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="item-details">
+                            <div>
+                                <div class="item-title">{{ item.livre.titre }}</div>
+                                <div class="item-author">
+                                    {% if item.livre.auteurs|length > 0 %}
+                                        Par {{ item.livre.auteurs|first.prenom }} {{ item.livre.auteurs|first.nom }}
+                                    {% endif %}
+                                </div>
+                                <div class="item-author" style="font-size: 0.75rem; color: #9ca3af;">
+                                    Prix unitaire: {{ item.prixUnitaire|number_format(2, ',', ' ') }} €
+                                </div>
+                                {% if item.livre.qte > 0 %}
+                                    <div class="item-author" style="font-size: 0.75rem; color: #16a34a; font-weight: 500;">
+                                        <i class="bi bi-check-circle"></i> Stock disponible: {{ item.livre.qte }} unité{{ item.livre.qte > 1 ? 's' : '' }}
+                                    </div>
+                                {% else %}
+                                    <div class="item-author" style="font-size: 0.75rem; color: #dc2626; font-weight: 500;">
+                                        <i class="bi bi-x-circle"></i> Épuisé
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="item-controls">
+                                <div class="quantity-control">
+                                    <form method="POST" action="{{ path('panier_mettre_a_jour', {'itemId': item.id}) }}" style="display: inline; margin: 0;">
+                                        <input type="hidden" name="quantite" value="{{ item.quantite - 1 }}">
+                                        <button type="submit" {% if item.quantite <= 1 %}disabled style="opacity: 0.5; cursor: not-allowed;"{% endif %}>−</button>
+                                    </form>
+                                    <input type="text" value="{{ item.quantite }}" readonly>
+                                    <form method="POST" action="{{ path('panier_mettre_a_jour', {'itemId': item.id}) }}" style="display: inline; margin: 0;">
+                                        <input type="hidden" name="quantite" value="{{ item.quantite + 1 }}">
+                                        <button type="submit" {% if item.quantite >= item.livre.qte %}disabled style="opacity: 0.5; cursor: not-allowed;"{% endif %}>+</button>
+                                    </form>
+                                </div>
+
+                                <div class="item-price-section">
+                                    <div class="price-value">{{ (item.prixUnitaire * item.quantite)|number_format(2, ',', ' ') }} €</div>
+                                    <form method="POST" action="{{ path('panier_supprimer', {'itemId': item.id}) }}" style="display: inline;">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete_item_' ~ item.id) }}">
+                                        <button type="submit" class="btn-remove" onclick="return confirm('Retirer cet article du panier ?');">
+                                            <i class="bi bi-trash"></i> Retirer
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="panier-summary">
+                <div class="summary-title">Résumé de la commande</div>
+
+                <div class="summary-row">
+                    <span>Sous-total ({{ panier.items|length }} article{{ panier.items|length > 1 ? 's' : '' }}):</span>
+                    <span>{{ cartSummary.subtotal|number_format(2, ',', ' ') }} €</span>
+                </div>
+
+                {% if cartSummary.discount > 0 %}
+                    <div class="summary-row" style="color: #16a34a;">
+                        <span>Remise{% if cartSummary.promoCode %} ({{ cartSummary.promoCode }}){% endif %} :</span>
+                        <span>- {{ cartSummary.discount|number_format(2, ',', ' ') }} €</span>
+                    </div>
+                {% endif %}
+
+                <div class="summary-row">
+                    <span>Livraison:</span>
+                    <span>
+                        {% if cartSummary.shipping == 0 %}
+                            {% if cartSummary.promoCode and cartSummary.coupon and cartSummary.coupon.type == 'free_shipping' %}
+                                <span style="color: #16a34a;">Gratuite</span> <small style="color: #6b7280;">(code promo)</small>
+                            {% elseif cartSummary.afterDiscount >= 60 %}
+                                Gratuite <small style="color: #6b7280;">(dès 60€)</small>
+                            {% else %}
+                                Gratuite
+                            {% endif %}
+                        {% else %}
+                            {{ cartSummary.shipping|number_format(2, ',', ' ') }} €
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div class="summary-row">
+                    <span>Taxes:</span>
+                    <span>Incluses</span>
+                </div>
+
+                <div class="summary-row total">
+                    <span>Total estimé:</span>
+                    <span>{{ cartSummary.total|number_format(2, ',', ' ') }} €</span>
+                </div>
+
+                <form method="POST" action="{{ path('panier_index') }}" class="promo-form">
+                    <label class="promo-label" for="promo_code">
+                        <i class="bi bi-ticket-perforated"></i> Code promo
+                    </label>
+                    <div class="promo-input-group">
+                        <input
+                            type="text"
+                            id="promo_code"
+                            name="promo_code"
+                            placeholder="Ex : PROMO10"
+                            value="{{ cartSummary.promoCode ?? '' }}"
+                        >
+                        <button type="submit">Appliquer</button>
+                    </div>
+                    <p class="promo-help">
+                        Entrez votre code promo pour bénéficier d'une remise.
+                    </p>
+                    {% if cartSummary.promoCode %}
+                        <a href="{{ path('panier_index') }}" style="font-size: 0.75rem; color: #dc2626; text-decoration: none; margin-top: 0.5rem; display: inline-block;">
+                            <i class="bi bi-x-circle"></i> Retirer le code
+                        </a>
+                    {% endif %}
+                </form>
+
+                <a href="{{ path('commande_checkout') }}" class="checkout-btn" style="text-decoration: none; display: inline-flex;">
+                    <i class="bi bi-credit-card"></i> Valider ma commande
+                </a>
+
+                <form method="POST" action="{{ path('panier_vider') }}" style="display: inline-block; width: 100%;">
+                    <input type="hidden" name="_token" value="{{ csrf_token('clear_panier') }}">
+                    <button type="submit" class="clear-btn" onclick="return confirm('Êtes-vous sûr de vouloir vider votre panier ?');">
+                        <i class="bi bi-trash"></i> Vider le panier
+                    </button>
+                </form>
+            </div>
+        </div>
+    {% else %}
+        <div class="panier-content">
+            <div class="empty-panier">
+                <div class="empty-panier-icon">
+                    <i class="bi bi-cart-x"></i>
+                </div>
+                <div class="empty-panier-title">Votre panier est vide</div>
+                <div class="empty-panier-text">Ajoutez des livres à votre panier pour commencer vos achats.</div>
+                <a href="{{ path('app_livre_index') }}" class="continue-shopping-btn">
+                    <i class="bi bi-arrow-left"></i> Continuer les achats
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+

@@ -3,25 +3,24 @@
 namespace App\Command;
 
 use App\Entity\User;
-use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 #[AsCommand(
     name: 'app:reset-password',
-    description: 'Reset a user password',
+    description: 'Reset user password',
 )]
 class ResetPasswordCommand extends Command
 {
     public function __construct(
-        private UserRepository $userRepository,
-        private UserPasswordHasherInterface $passwordHasher,
         private EntityManagerInterface $entityManager,
+        private UserPasswordHasherInterface $passwordHasher,
     ) {
         parent::__construct();
     }
@@ -35,23 +34,32 @@ class ResetPasswordCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $io = new SymfonyStyle($input, $output);
+        
         $email = $input->getArgument('email');
-        $plainPassword = $input->getArgument('password');
+        $newPassword = $input->getArgument('password');
 
-        $user = $this->userRepository->findOneBy(['email' => $email]);
-
+        // Find the user
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
         if (!$user) {
-            $output->writeln("<error>User with email '$email' not found</error>");
+            $io->error("User with email '$email' not found!");
             return Command::FAILURE;
         }
 
-        // Hash the password
-        $hashedPassword = $this->passwordHasher->hashPassword($user, $plainPassword);
+        if (strlen($newPassword) < 8) {
+            $io->error("Password must be at least 8 characters long!");
+            return Command::FAILURE;
+        }
+
+        // Hash and set the new password
+        $hashedPassword = $this->passwordHasher->hashPassword($user, $newPassword);
         $user->setPassword($hashedPassword);
 
         $this->entityManager->flush();
 
-        $output->writeln("<info>Password reset successfully for user '$email'</info>");
+        $io->success("Password for '$email' has been reset to '$newPassword'");
+        $io->text("You can now login with this password.");
+
         return Command::SUCCESS;
     }
 }
