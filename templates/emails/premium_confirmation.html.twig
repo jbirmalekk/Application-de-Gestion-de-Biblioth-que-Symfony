@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .email-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .email-header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .premium-badge {
+            background: rgba(255, 255, 255, 0.2);
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 50px;
+            margin-top: 15px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .email-body {
+            padding: 40px 30px;
+        }
+        .email-body p {
+            margin: 0 0 15px;
+            font-size: 16px;
+        }
+        .subscription-details {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .detail-label {
+            font-weight: 600;
+            color: #667eea;
+        }
+        .detail-value {
+            color: #333;
+            font-weight: 500;
+        }
+        .benefits-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        .benefits-section h3 {
+            color: #667eea;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+        .benefit-item {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+        .benefit-item:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #28a745;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        .button-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .premium-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 16px;
+            transition: transform 0.3s ease;
+        }
+        .premium-button:hover {
+            transform: scale(1.05);
+        }
+        .email-footer {
+            background: #2d3748;
+            color: #ffffff;
+            padding: 30px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .email-footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #667eea, transparent);
+            margin: 30px 0;
+        }
+        .highlight {
+            color: #667eea;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <h1>🎉 Bienvenue dans BiblioTech Premium !</h1>
+            <div class="premium-badge">✨ MEMBRE PREMIUM ✨</div>
+        </div>
+        
+        <div class="email-body">
+            <p>Bonjour <strong>{{ user.prenom }} {{ user.nom }}</strong>,</p>
+            
+            <p>Félicitations ! Votre paiement a été confirmé avec succès et votre abonnement Premium est maintenant actif.</p>
+            
+            <div class="divider"></div>
+            
+            <div class="subscription-details">
+                <h3 style="margin-top: 0; color: #667eea; text-align: center;">📋 Détails de votre abonnement</h3>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Type d'abonnement :</span>
+                    <span class="detail-value">
+                        {% if subscription.type == 'monthly' %}
+                            🔄 Mensuel
+                        {% else %}
+                            📅 Annuel
+                        {% endif %}
+                    </span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Date de début :</span>
+                    <span class="detail-value">{{ subscription.startDate|date('d/m/Y à H:i') }}</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Date d'expiration :</span>
+                    <span class="detail-value">{{ subscription.endDate|date('d/m/Y à H:i') }}</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Montant payé :</span>
+                    <span class="detail-value">{{ subscription.price }} €</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Statut :</span>
+                    <span class="detail-value">✅ Actif</span>
+                </div>
+            </div>
+            
+            <div class="benefits-section">
+                <h3>🌟 Vos avantages Premium</h3>
+                <div class="benefit-item">Accès illimité à tous les livres Premium de la bibliothèque</div>
+                <div class="benefit-item">Téléchargement de livres en format numérique</div>
+                <div class="benefit-item">Réservation prioritaire pour les nouveaux titres</div>
+                <div class="benefit-item">Accès exclusif aux événements et webinaires</div>
+                <div class="benefit-item">Badge Premium sur votre profil</div>
+                <div class="benefit-item">Support client prioritaire</div>
+            </div>
+            
+            <div class="button-container">
+                <a href="{{ app_url }}/livre" class="premium-button">
+                    📚 Découvrir les livres Premium
+                </a>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <p style="color: #666; font-size: 14px;">
+                <strong>Important :</strong> Votre abonnement sera automatiquement renouvelé à la date d'expiration. 
+                Vous pouvez gérer ou annuler votre abonnement à tout moment depuis votre profil.
+            </p>
+            
+            <p style="margin-top: 30px;">
+                Merci de votre confiance !<br>
+                <span class="highlight">L'équipe BiblioTech</span>
+            </p>
+        </div>
+        
+        <div class="email-footer">
+            <p style="margin: 0 0 10px 0;">
+                <strong>BiblioTech - Votre bibliothèque numérique</strong>
+            </p>
+            <p style="margin: 0 0 10px 0;">
+                Une question ? Contactez-nous à <a href="mailto:support@bibliotech.com">support@bibliotech.com</a>
+            </p>
+            <p style="margin: 0; color: #999; font-size: 12px;">
+                Vous recevez cet email car vous avez souscrit à un abonnement Premium sur BiblioTech.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

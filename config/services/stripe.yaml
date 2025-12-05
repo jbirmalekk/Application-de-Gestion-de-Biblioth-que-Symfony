@@ -1,0 +1,9 @@
+services:
+    Stripe\StripeClient:
+        arguments:
+            - '%env(STRIPE_SECRET_KEY)%'
+
+    App\Service\StripeService:
+        arguments:
+            $stripe: '@Stripe\StripeClient'
+            $publicKey: '%env(STRIPE_PUBLIC_KEY)%'

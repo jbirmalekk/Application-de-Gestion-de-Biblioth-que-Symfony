@@ -435,7 +435,14 @@
 <div class="container-fluid" style="padding: 2rem 0;">
     <div class="show-container">
         <div class="show-header">
-            <h1>{{ livre.titre }}</h1>
+            <div class="d-flex justify-content-between align-items-center">
+                <h1>{{ livre.titre }}</h1>
+                {% if livre.isPremium %}
+                    <span style="background: linear-gradient(135deg, #ffd700, #ffed4e); color: #000; padding: 0.5rem 1.5rem; border-radius: 999px; font-weight: bold; font-size: 0.9rem;">
+                        ⭐ PREMIUM
+                    </span>
+                {% endif %}
+            </div>
         </div>
         
         <div class="book-top">
@@ -647,18 +654,46 @@
                     </button>
                 </form>
 
-                {% if livre.qte > 0 %}
-                    <form method="POST" action="{{ path('panier_ajouter', {'id': livre.id}) }}" style="display: inline;">
-                        <input type="hidden" name="_token" value="{{ csrf_token('panier-add-' ~ livre.id) }}">
-                        <input type="hidden" name="quantite" value="1">
-                        <button type="submit" class="btn-add-cart">
-                            <i class="bi bi-cart-plus"></i> Ajouter au panier
-                        </button>
-                    </form>
+                {% if livre.isPremium %}
+                    {# Livre Premium #}
+                    {% if app.user.hasActiveSubscription %}
+                        {# Utilisateur Premium - Peut lire en ligne ET acheter #}
+                        <a href="{{ path('premium_read', {'id': livre.id}) }}" class="btn-add-cart" style="background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); color: #000; margin-right: 10px;">
+                            <i class="bi bi-book-half"></i> ⭐ Lire maintenant
+                        </a>
+                        {% if livre.qte > 0 %}
+                            <form method="POST" action="{{ path('panier_ajouter', {'id': livre.id}) }}" style="display: inline;">
+                                <input type="hidden" name="_token" value="{{ csrf_token('panier-add-' ~ livre.id) }}">
+                                <input type="hidden" name="quantite" value="1">
+                                <button type="submit" class="btn-add-cart">
+                                    <i class="bi bi-cart-plus"></i> Ajouter au panier
+                                </button>
+                            </form>
+                        {% else %}
+                            <button type="button" class="btn-add-cart" disabled title="Produit rupture de stock">
+                                <i class="bi bi-cart-x"></i> Rupture de stock
+                            </button>
+                        {% endif %}
+                    {% else %}
+                        <a href="{{ path('subscription_index') }}" class="btn-add-cart" style="background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); color: #000;">
+                            <i class="bi bi-star-fill"></i> S'abonner pour lire
+                        </a>
+                    {% endif %}
                 {% else %}
-                    <button type="button" class="btn-add-cart" disabled title="Produit rupture de stock">
-                        <i class="bi bi-cart-x"></i> Rupture de stock
-                    </button>
+                    {# Livre Normal - Achat standard #}
+                    {% if livre.qte > 0 %}
+                        <form method="POST" action="{{ path('panier_ajouter', {'id': livre.id}) }}" style="display: inline;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('panier-add-' ~ livre.id) }}">
+                            <input type="hidden" name="quantite" value="1">
+                            <button type="submit" class="btn-add-cart">
+                                <i class="bi bi-cart-plus"></i> Ajouter au panier
+                            </button>
+                        </form>
+                    {% else %}
+                        <button type="button" class="btn-add-cart" disabled title="Produit rupture de stock">
+                            <i class="bi bi-cart-x"></i> Rupture de stock
+                        </button>
+                    {% endif %}
                 {% endif %}
             {% endif %}
             

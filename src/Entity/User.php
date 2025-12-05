@@ -38,15 +38,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private bool $isVerified = false;
 
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    private bool $isPremium = false;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $premiumExpiresAt = null;
+
     /**
      * @var Collection<int, Avis>
      */
     #[ORM\OneToMany(targetEntity: Avis::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $avis;
 
+    /**
+     * @var Collection<int, Subscription>
+     */
+    #[ORM\OneToMany(targetEntity: Subscription::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $subscriptions;
+
     public function __construct()
     {
         $this->avis = new ArrayCollection();
+        $this->subscriptions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -169,6 +182,91 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             }
         }
 
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Subscription>
+     */
+    public function getSubscriptions(): Collection
+    {
+        return $this->subscriptions;
+    }
+
+    public function addSubscription(Subscription $subscription): static
+    {
+        if (!$this->subscriptions->contains($subscription)) {
+            $this->subscriptions->add($subscription);
+            $subscription->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSubscription(Subscription $subscription): static
+    {
+        if ($this->subscriptions->removeElement($subscription)) {
+            if ($subscription->getUser() === $this) {
+                $subscription->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function hasActiveSubscription(): bool
+    {
+        // Vérifier d'abord si l'utilisateur a le statut premium actif
+        if ($this->isPremium()) {
+            return true;
+        }
+        
+        // Sinon vérifier les subscriptions dans la base de données
+        foreach ($this->subscriptions as $subscription) {
+            if ($subscription->isActive()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function getActiveSubscription(): ?Subscription
+    {
+        foreach ($this->subscriptions as $subscription) {
+            if ($subscription->isActive()) {
+                return $subscription;
+            }
+        }
+        return null;
+    }
+
+    public function isPremium(): bool
+    {
+        // Vérifier si le premium n'a pas expiré
+        if ($this->isPremium && $this->premiumExpiresAt) {
+            $now = new \DateTime();
+            if ($now > $this->premiumExpiresAt) {
+                $this->isPremium = false;
+                return false;
+            }
+        }
+        return $this->isPremium;
+    }
+
+    public function setIsPremium(bool $isPremium): static
+    {
+        $this->isPremium = $isPremium;
+        return $this;
+    }
+
+    public function getPremiumExpiresAt(): ?\DateTimeInterface
+    {
+        return $this->premiumExpiresAt;
+    }
+
+    public function setPremiumExpiresAt(?\DateTimeInterface $premiumExpiresAt): static
+    {
+        $this->premiumExpiresAt = $premiumExpiresAt;
         return $this;
     }
 

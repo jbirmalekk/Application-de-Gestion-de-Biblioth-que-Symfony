@@ -1,0 +1,513 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Abonnement Premium{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        
+        .premium-header {
+            text-align: center;
+            padding: 1.5rem 0 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .premium-header h1 {
+            color: white;
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .premium-header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            margin-top: 0.5rem;
+        }
+        
+        /* Style pour le formulaire de paiement Stripe */
+        .payment-section {
+            display: none;
+            margin-top: 2rem;
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .payment-section.active {
+            display: block;
+        }
+        
+        .stripe-element {
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+        
+        .stripe-element:focus,
+        .stripe-element.StripeElement--focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .stripe-element.StripeElement--invalid {
+            border-color: #dc3545;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="container my-4">
+    <div class="premium-header">
+        <h1>⭐ Abonnement Premium</h1>
+        <p>Accédez à une bibliothèque exclusive de livres premium</p>
+    </div>
+
+    {% if activeSubscription %}
+        <!-- Abonnement actif -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-lg-10">
+                <div class="card border-0 shadow-lg" style="border-radius: 15px; overflow: hidden;">
+                    <div class="card-header text-white" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); padding: 1.5rem; border: none;">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-check-circle-fill fs-3 me-3"></i>
+                            <div>
+                                <h4 class="mb-0 fw-bold">Votre Abonnement Actif</h4>
+                                <p class="mb-0 opacity-75">Profitez de tous les avantages premium</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-3" style="background: white;">
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <div class="p-2 rounded" style="background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);">
+                                    <strong style="color: #667eea; font-size: 0.9rem;">Type</strong>
+                                    <p class="mb-0 fw-bold">{{ activeSubscription.type == 'monthly' ? '📅 Mensuel' : '📆 Annuel' }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="p-2 rounded" style="background: linear-gradient(135deg, #fff3cd 0%, #ffe8a1 100%);">
+                                    <strong style="color: #f39c12; font-size: 0.9rem;">Prix</strong>
+                                    <p class="mb-0 fw-bold">{{ activeSubscription.price }} €</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="p-2 rounded" style="background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);">
+                                    <strong style="color: #17a2b8; font-size: 0.9rem;">Restant</strong>
+                                    <p class="mb-0">
+                                        <span class="badge fs-6 fw-bold" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);">{{ activeSubscription.remainingDays }} jours</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between flex-wrap gap-2">
+                            <form method="post" action="{{ path('subscription_renew') }}" class="flex-grow-1">
+                                <button type="submit" class="btn btn-lg w-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; padding: 0.75rem; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
+                                    <i class="bi bi-arrow-clockwise me-2"></i> Renouveler
+                                </button>
+                            </form>
+
+                            <form method="post" action="{{ path('subscription_cancel') }}" class="flex-grow-1"
+                                  onsubmit="return confirm('Êtes-vous sûr de vouloir annuler votre abonnement?');">
+                                <button type="submit" class="btn btn-lg w-100" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border: none; border-radius: 10px; padding: 0.75rem; box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);">
+                                    <i class="bi bi-x-circle me-2"></i> Annuler
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <!-- Proposer l'abonnement -->
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="row">
+                    <!-- Abonnement Mensuel -->
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100 border-0 shadow" style="border-radius: 15px; overflow: hidden;">
+                            <div class="card-header text-white text-center" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); padding: 1.5rem; border: none;">
+                                <h4 class="mb-0 fw-bold">Mensuel</h4>
+                            </div>
+                            <div class="card-body text-center p-3">
+                                <div class="display-4 mb-2 fw-bold" style="color: #2563eb;">{{ monthlyPrice }}€</div>
+                                <p class="text-muted mb-3">par mois</p>
+                                
+                                <ul class="list-unstyled mb-3 text-start" style="font-size: 0.9rem;">
+                                    <li class="mb-2 d-flex align-items-center">
+                                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                        <span>Accès à tous les livres premium</span>
+                                    </li>
+                                    <li class="mb-2 d-flex align-items-center">
+                                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                        <span>Sans engagement</span>
+                                    </li>
+                                </ul>
+
+                                <button type="button" class="btn btn-lg w-100 text-white fw-bold subscription-btn" 
+                                    data-subscription-type="monthly" 
+                                    data-subscription-price="{{ monthlyPrice }}"
+                                    data-subscription-label="Mensuel" 
+                                    style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); border: none; border-radius: 10px; padding: 0.75rem; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);">
+                                    <i class="bi bi-credit-card me-2"></i>S'abonner
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Abonnement Annuel -->
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100 border-0 shadow position-relative" style="border-radius: 15px; overflow: hidden;">
+                            
+                            <div class="card-header text-white text-center" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); padding: 1.5rem; border: none;">
+                                <h4 class="mb-0 fw-bold">Annuel</h4>
+                            </div>
+                            <div class="card-body text-center p-3">
+                                <div class="display-4 mb-2 fw-bold" style="color: #11998e;">{{ yearlyPrice }}€</div>
+                                <p class="text-muted mb-2">par an</p>
+                                <div class="alert alert-success mb-3 py-2" style="background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%); border: none; border-radius: 8px; font-size: 0.85rem;">
+                                    <strong><i class="bi bi-piggy-bank-fill me-1"></i>Économisez {{ (monthlyPrice * 12 - yearlyPrice)|number_format(2) }}€</strong>
+                                </div>
+                                
+                                <ul class="list-unstyled mb-3 text-start" style="font-size: 0.9rem;">
+                                    <li class="mb-2 d-flex align-items-center">
+                                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                        <span>Tous les avantages mensuel</span>
+                                    </li>
+                                    <li class="mb-2 d-flex align-items-center">
+                                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                        <span>2 mois gratuits</span>
+                                    </li>
+                                </ul>
+
+                                <button type="button" class="btn btn-lg w-100 text-white fw-bold subscription-btn" 
+                                    data-subscription-type="yearly" 
+                                    data-subscription-price="{{ yearlyPrice }}"
+                                    data-subscription-label="Annuel"
+                                    style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border: none; border-radius: 10px; padding: 0.75rem; box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3);">
+                                    <i class="bi bi-credit-card me-2"></i>S'abonner
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section de paiement avec Stripe Elements -->
+                <div class="payment-section" id="paymentSection">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="mb-0"><i class="bi bi-credit-card me-2"></i>Paiement sécurisé</h4>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="hidePaymentSection()">
+                            <i class="bi bi-x-lg"></i> Annuler
+                        </button>
+                    </div>
+
+                    <div class="alert" style="background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%); border: none; border-left: 4px solid #667eea;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong style="color: #667eea;">📦 Abonnement:</strong> <span id="selectedPlan" style="font-weight: 600;"></span>
+                            </div>
+                            <div>
+                                <strong style="color: #667eea;">💰 Total:</strong> <span id="selectedPrice" style="font-size: 1.5rem; font-weight: 700; color: #764ba2;"></span> €
+                            </div>
+                        </div>
+                    </div>
+
+                    <form id="payment-form">
+                        <input type="hidden" id="subscriptionType" name="subscriptionType">
+                        
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-credit-card-2-front text-primary me-2"></i>Numéro de carte
+                                </label>
+                                <div id="card-number-element" class="stripe-element"></div>
+                                <div id="card-number-errors" class="text-danger mt-2" style="font-size: 0.875rem;"></div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-calendar-event text-success me-2"></i>Date d'expiration
+                                </label>
+                                <div id="card-expiry-element" class="stripe-element"></div>
+                                <div id="card-expiry-errors" class="text-danger mt-2" style="font-size: 0.875rem;"></div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-lock-fill text-warning me-2"></i>CVV
+                                </label>
+                                <div id="card-cvc-element" class="stripe-element"></div>
+                                <div id="card-cvc-errors" class="text-danger mt-2" style="font-size: 0.875rem;"></div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-success d-flex align-items-center mb-3" style="border-radius: 10px; border: 2px solid #28a745; background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%); font-size: 0.9rem;">
+                            <i class="bi bi-shield-check fs-4 text-success me-3"></i>
+                            <div>
+                                <strong>Paiement 100% sécurisé</strong><br>
+                                <small class="text-muted">Vos données bancaires sont cryptées</small>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-lg w-100" id="submit-button" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; padding: 0.875rem; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);">
+                            <i class="bi bi-check-circle me-2"></i>Confirmer le paiement
+                        </button>
+                        
+                        <div id="payment-errors" class="text-danger mt-3 text-center" style="font-weight: 600;"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialiser Stripe
+    const stripe = Stripe('{{ stripe_public_key }}');
+    const elements = stripe.elements();
+    
+    // Créer les éléments Stripe
+    const cardNumber = elements.create('cardNumber', {
+        style: {
+            base: {
+                fontSize: '16px',
+                color: '#1f2937',
+                fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                '::placeholder': {
+                    color: '#9ca3af',
+                },
+            },
+            invalid: {
+                color: '#dc3545',
+            },
+        },
+    });
+    
+    const cardExpiry = elements.create('cardExpiry', {
+        style: {
+            base: {
+                fontSize: '16px',
+                color: '#1f2937',
+                fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                '::placeholder': {
+                    color: '#9ca3af',
+                },
+            },
+            invalid: {
+                color: '#dc3545',
+            },
+        },
+    });
+    
+    const cardCvc = elements.create('cardCvc', {
+        style: {
+            base: {
+                fontSize: '16px',
+                color: '#1f2937',
+                fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                '::placeholder': {
+                    color: '#9ca3af',
+                },
+            },
+            invalid: {
+                color: '#dc3545',
+            },
+        },
+    });
+    
+    // Monter les éléments dans le DOM
+    cardNumber.mount('#card-number-element');
+    cardExpiry.mount('#card-expiry-element');
+    cardCvc.mount('#card-cvc-element');
+    
+    // Gérer les erreurs
+    cardNumber.on('change', function(event) {
+        const displayError = document.getElementById('card-number-errors');
+        if (event.error) {
+            displayError.textContent = event.error.message;
+        } else {
+            displayError.textContent = '';
+        }
+    });
+    
+    cardExpiry.on('change', function(event) {
+        const displayError = document.getElementById('card-expiry-errors');
+        if (event.error) {
+            displayError.textContent = event.error.message;
+        } else {
+            displayError.textContent = '';
+        }
+    });
+    
+    cardCvc.on('change', function(event) {
+        const displayError = document.getElementById('card-cvc-errors');
+        if (event.error) {
+            displayError.textContent = event.error.message;
+        } else {
+            displayError.textContent = '';
+        }
+    });
+    
+    // Gestion des boutons d'abonnement
+    const subscriptionButtons = document.querySelectorAll('.subscription-btn');
+    
+    subscriptionButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const type = this.getAttribute('data-subscription-type');
+            const price = this.getAttribute('data-subscription-price');
+            const label = this.getAttribute('data-subscription-label');
+            
+            // Afficher la section de paiement
+            document.getElementById('paymentSection').classList.add('active');
+            document.getElementById('selectedPlan').textContent = label;
+            document.getElementById('selectedPrice').textContent = price;
+            document.getElementById('subscriptionType').value = type;
+            
+            // Scroll vers la section de paiement
+            document.getElementById('paymentSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+    });
+    
+    // Soumettre le formulaire de paiement
+    const form = document.getElementById('payment-form');
+    const submitButton = document.getElementById('submit-button');
+    
+    form.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        
+        const subscriptionType = document.getElementById('subscriptionType').value;
+        
+        // Désactiver le bouton
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Traitement en cours...';
+        
+        try {
+            // Créer un PaymentMethod avec Stripe
+            const {paymentMethod, error} = await stripe.createPaymentMethod({
+                type: 'card',
+                card: cardNumber,
+            });
+            
+            if (error) {
+                document.getElementById('payment-errors').textContent = error.message;
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="bi bi-check-circle me-2"></i>Confirmer le paiement';
+                return;
+            }
+            
+            // Envoyer le PaymentMethod au serveur
+            const response = await fetch('{{ path('subscription_create_checkout') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    subscription_type: subscriptionType,
+                    payment_method_id: paymentMethod.id
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Rediriger vers Stripe Checkout
+                const result = await stripe.redirectToCheckout({
+                    sessionId: data.sessionId
+                });
+                
+                if (result.error) {
+                    document.getElementById('payment-errors').textContent = result.error.message;
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = '<i class="bi bi-check-circle me-2"></i>Confirmer le paiement';
+                }
+            } else {
+                document.getElementById('payment-errors').textContent = data.error || 'Une erreur est survenue';
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="bi bi-check-circle me-2"></i>Confirmer le paiement';
+            }
+        } catch (error) {
+            console.error('Erreur:', error);
+            document.getElementById('payment-errors').textContent = 'Une erreur est survenue. Veuillez réessayer.';
+            submitButton.disabled = false;
+            submitButton.innerHTML = '<i class="bi bi-check-circle me-2"></i>Confirmer le paiement';
+        }
+    });
+});
+
+function hidePaymentSection() {
+    document.getElementById('paymentSection').classList.remove('active');
+    // Scroll vers le haut
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+
+<style>
+.modal-content {
+    border-radius: 20px;
+    overflow: hidden;
+    border: none;
+}
+
+.stripe-element {
+    padding: 12px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    background: white;
+    transition: all 0.3s ease;
+}
+
+.stripe-element:focus,
+.stripe-element.StripeElement--focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.stripe-element.StripeElement--invalid {
+    border-color: #dc3545;
+}
+
+#submit-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+    transition: all 0.3s ease;
+}
+
+#submit-button:active {
+    transform: translateY(0);
+}
+
+#submit-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.payment-section {
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,242 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Configuration Mailtrap{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-lg border-0">
+                <div class="card-header text-white text-center py-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <h2 class="mb-0">
+                        <i class="fas fa-envelope-open-text me-2"></i>
+                        Configuration Mailtrap
+                    </h2>
+                    <p class="mb-0 mt-2 opacity-75">Guide de configuration pour les emails de réinitialisation</p>
+                </div>
+                
+                <div class="card-body p-5">
+                    <!-- Statut de configuration -->
+                    <div class="alert alert-info mb-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Statut actuel :</strong> 
+                        {% if app.request.server.get('MAILER_DSN') contains 'mailtrap' %}
+                            <span class="badge bg-success">✅ Configuré</span>
+                        {% else %}
+                            <span class="badge bg-warning">⚠️ Non configuré</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Étapes de configuration -->
+                    <h4 class="mb-4">
+                        <i class="fas fa-list-ol text-primary me-2"></i>
+                        Étapes de configuration
+                    </h4>
+
+                    <div class="accordion" id="configAccordion">
+                        <!-- Étape 1 -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#step1">
+                                    <span class="badge bg-primary me-2">1</span>
+                                    Créer un compte Mailtrap
+                                </button>
+                            </h2>
+                            <div id="step1" class="accordion-collapse collapse show" data-bs-parent="#configAccordion">
+                                <div class="accordion-body">
+                                    <ol>
+                                        <li>Allez sur <a href="https://mailtrap.io" target="_blank" class="text-primary"><strong>https://mailtrap.io</strong></a></li>
+                                        <li>Cliquez sur <strong>"Sign Up"</strong></li>
+                                        <li>Créez un compte gratuit (aucune carte bancaire requise)</li>
+                                        <li>Confirmez votre adresse email</li>
+                                    </ol>
+                                    <div class="alert alert-success mt-3">
+                                        <i class="fas fa-gift me-2"></i>
+                                        <strong>100% gratuit</strong> - Jusqu'à 1000 emails/mois
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Étape 2 -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#step2">
+                                    <span class="badge bg-primary me-2">2</span>
+                                    Obtenir les identifiants SMTP
+                                </button>
+                            </h2>
+                            <div id="step2" class="accordion-collapse collapse" data-bs-parent="#configAccordion">
+                                <div class="accordion-body">
+                                    <ol>
+                                        <li>Connectez-vous à votre compte Mailtrap</li>
+                                        <li>Dans le menu, cliquez sur <strong>"Email Testing"</strong></li>
+                                        <li>Sélectionnez votre inbox (ou créez-en une)</li>
+                                        <li>Cliquez sur <strong>"Show Credentials"</strong></li>
+                                        <li>Notez vos identifiants SMTP :</li>
+                                    </ol>
+                                    <div class="card bg-light mt-3">
+                                        <div class="card-body">
+                                            <ul class="list-unstyled mb-0">
+                                                <li><strong>Host:</strong> sandbox.smtp.mailtrap.io</li>
+                                                <li><strong>Port:</strong> 2525</li>
+                                                <li><strong>Username:</strong> <code>1a2b3c4d5e6f7g</code> <small class="text-muted">(exemple)</small></li>
+                                                <li><strong>Password:</strong> <code>9h8i7j6k5l4m3n</code> <small class="text-muted">(exemple)</small></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Étape 3 -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#step3">
+                                    <span class="badge bg-primary me-2">3</span>
+                                    Configurer le fichier .env.local
+                                </button>
+                            </h2>
+                            <div id="step3" class="accordion-collapse collapse" data-bs-parent="#configAccordion">
+                                <div class="accordion-body">
+                                    <p>Créez un fichier <code>.env.local</code> à la racine du projet avec :</p>
+                                    <div class="card bg-dark text-white">
+                                        <div class="card-body">
+                                            <pre class="mb-0" style="color: #a8ff60;"><code>###> symfony/mailer ###
+MAILER_DSN=smtp://VOTRE_USERNAME:VOTRE_PASSWORD@sandbox.smtp.mailtrap.io:2525
+###< symfony/mailer ###</code></pre>
+                                        </div>
+                                    </div>
+                                    <div class="alert alert-warning mt-3">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        Remplacez <code>VOTRE_USERNAME</code> et <code>VOTRE_PASSWORD</code> par vos vrais identifiants !
+                                    </div>
+                                    <p class="mt-3"><strong>Exemple concret :</strong></p>
+                                    <div class="card bg-dark text-white">
+                                        <div class="card-body">
+                                            <pre class="mb-0" style="color: #a8ff60;"><code>MAILER_DSN=smtp://1a2b3c4d5e6f7g:9h8i7j6k5l4m3n@sandbox.smtp.mailtrap.io:2525</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Étape 4 -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#step4">
+                                    <span class="badge bg-primary me-2">4</span>
+                                    Vider le cache
+                                </button>
+                            </h2>
+                            <div id="step4" class="accordion-collapse collapse" data-bs-parent="#configAccordion">
+                                <div class="accordion-body">
+                                    <p>Exécutez la commande suivante dans votre terminal :</p>
+                                    <div class="card bg-dark text-white">
+                                        <div class="card-body">
+                                            <pre class="mb-0" style="color: #ffd700;"><code>symfony console cache:clear</code></pre>
+                                        </div>
+                                    </div>
+                                    <p class="mt-3">Ou avec PHP :</p>
+                                    <div class="card bg-dark text-white">
+                                        <div class="card-body">
+                                            <pre class="mb-0" style="color: #ffd700;"><code>php bin/console cache:clear</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Étape 5 -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#step5">
+                                    <span class="badge bg-success me-2">5</span>
+                                    Tester la fonctionnalité
+                                </button>
+                            </h2>
+                            <div id="step5" class="accordion-collapse collapse" data-bs-parent="#configAccordion">
+                                <div class="accordion-body">
+                                    <ol>
+                                        <li>Allez sur la <a href="{{ path('app_login') }}" class="text-primary">page de connexion</a></li>
+                                        <li>Cliquez sur <strong>"Mot de passe oublié ?"</strong></li>
+                                        <li>Entrez une adresse email valide d'un utilisateur</li>
+                                        <li>Allez sur Mailtrap pour voir l'email reçu</li>
+                                        <li>Cliquez sur le lien dans l'email</li>
+                                        <li>Définissez un nouveau mot de passe</li>
+                                    </ol>
+                                    <div class="text-center mt-4">
+                                        <a href="{{ path('app_forgot_password_request') }}" class="btn btn-lg btn-primary">
+                                            <i class="fas fa-flask me-2"></i>Tester maintenant
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fonctionnalités -->
+                    <div class="mt-5">
+                        <h4 class="mb-3">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Fonctionnalités incluses
+                        </h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check text-success me-2"></i>Token sécurisé (64 caractères)</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Expiration après 1 heure</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Email HTML professionnel</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Validation forte du mot de passe</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check text-success me-2"></i>Protection anti-énumération</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Usage unique du token</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Interface responsive</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Messages flash informatifs</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Documentation -->
+                    <div class="mt-4">
+                        <div class="alert alert-light border">
+                            <i class="fas fa-book me-2"></i>
+                            <strong>Documentation complète :</strong> Consultez le fichier 
+                            <code>RESET_PASSWORD_CONFIG.md</code> à la racine du projet
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="text-center mt-5">
+                        <a href="{{ path('app_login') }}" class="btn btn-outline-primary me-2">
+                            <i class="fas fa-sign-in-alt me-2"></i>Page de connexion
+                        </a>
+                        <a href="{{ path('app_acceuil') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-home me-2"></i>Accueil
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .accordion-button:not(.collapsed) {
+        background-color: #f8f9fa;
+        color: #667eea;
+    }
+    .accordion-button:focus {
+        box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+    }
+    pre {
+        background: transparent;
+        border: none;
+        padding: 0;
+    }
+</style>
+{% endblock %}

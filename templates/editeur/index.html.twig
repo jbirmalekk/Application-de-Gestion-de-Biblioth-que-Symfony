@@ -7,88 +7,92 @@
     <style>
         .editeur-container {
             background-color: #ffffff;
-            padding: 2rem;
-            border-radius: 6px;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            padding: 0;
+            border-radius: 20px;
+            border: none;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
         }
         
         .editeur-header {
-            background: linear-gradient(135deg, #f9fafb, #f9fafb);
-            padding: 1.5rem;
-            margin: -2rem -2rem 1.5rem -2rem;
-            border-bottom: 1px solid #e5e7eb;
-            border-radius: 5px 5px 0 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+            margin: 0;
+            border-bottom: none;
+            border-radius: 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         
         .editeur-header h1 {
-             font-size: 1.5rem;
-            font-weight: 600;
-            color: #1f2937;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
             margin: 0;
             letter-spacing: -0.5px;
         }
         
         .btn-new {
-            background-color: #ffffff;
-            color: #374151;
-            border: 1px solid #d1d5db;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            font-size: 0.875rem;
-            font-weight: 500;
+            padding: 0.75rem 1.75rem;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
             text-decoration: none;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
         
         .btn-new:hover {
-            background-color: #f3f4f6;
-            border-color: #9ca3af;
-            color: #1f2937;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            color: #667eea;
         }
         
         .table-container {
             overflow-x: auto;
+            padding: 2rem;
         }
         
         .editeur-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.875rem;
+            font-size: 0.95rem;
         }
         
         .editeur-table thead {
-            background-color: #f9fafb;
-            border-bottom: 1px solid #e5e7eb;
+            background: transparent;
+            border-bottom: 2px solid #f0f0f0;
         }
         
         .editeur-table thead th {
-            padding: 1rem;
+            padding: 1rem 1.25rem;
             text-align: left;
-            font-weight: 600;
-            color: #374151;
+            font-weight: 700;
+            color: #667eea;
             border: none;
             letter-spacing: -0.25px;
+            font-size: 0.95rem;
         }
         
         .editeur-table tbody tr {
-            border-bottom: 1px solid #f3f4f6;
-            transition: background-color 0.2s ease;
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
         }
         
         .editeur-table tbody tr:hover {
-            background-color: #fafbfc;
+            background: rgba(102, 126, 234, 0.03);
+            transform: translateX(5px);
         }
         
         .editeur-table tbody td {
-            padding: 1rem;
+            padding: 1.25rem;
             color: #4b5563;
             border: none;
             vertical-align: middle;
@@ -96,23 +100,26 @@
         
         .badge-country {
             display: inline-block;
-            padding: 0.35rem 0.7rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            background-color: #e0f2fe;
+            padding: 0.4rem 1rem;
+            padding: 0.4rem 1rem;
+            border-radius: 25px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
             color: #0369a1;
-            border: 1px solid #bae6fd;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
         
         .phone-code {
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-            font-size: 0.8rem;
-            background-color: #f9fafb;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
             color: #4b5563;
-            padding: 0.25rem 0.5rem;
-            border-radius: 3px;
-            border: 1px solid #e5e7eb;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
         }
         
         .actions-group {
@@ -121,78 +128,79 @@
         }
         
         .btn-action {
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             padding: 0;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
+            border: none;
+            border-radius: 10px;
             background-color: #ffffff;
-            color: #6b7280;
             display: flex;
             align-items: center;
             justify-content: center;
             text-decoration: none;
-            transition: all 0.2s ease;
-            font-size: 0.875rem;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
             cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
         
         .btn-action:hover {
-            color: #1f2937;
-            border-color: #9ca3af;
-            background-color: #f9fafb;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
         
         .btn-action.view {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
             color: #2563eb;
         }
         
         .btn-action.view:hover {
-            border-color: #2563eb;
-            background-color: #eff6ff;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
         }
         
         .btn-action.edit {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
             color: #16a34a;
         }
         
         .btn-action.edit:hover {
-            border-color: #16a34a;
-            background-color: #f0fdf4;
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
         }
         
         .btn-action.delete {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
             color: #dc2626;
         }
         
         .btn-action.delete:hover {
-            border-color: #dc2626;
-            background-color: #fef2f2;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
         }
         
         .empty-state {
             text-align: center;
-            padding: 3rem 2rem;
+            padding: 5rem 2rem;
         }
         
         .empty-state-icon {
             font-size: 4rem;
             color: #d1d5db;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
         
         .empty-state-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.75rem;
         }
         
         .empty-state-text {
-            color: #9ca3af;
+            color: #6b7280;
             margin-bottom: 1.5rem;
-            font-size: 0.95rem;
+            font-size: 1.1rem;
         }
     </style>
 {% endblock %}

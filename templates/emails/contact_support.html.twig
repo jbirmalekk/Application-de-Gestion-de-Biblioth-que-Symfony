@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .email-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .email-header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .email-body {
+            padding: 30px;
+        }
+        .info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        .message-content {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 1px solid #e9ecef;
+        }
+        .email-footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #6c757d;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <h1>📧 Nouveau Message de Contact</h1>
+        </div>
+        
+        <div class="email-body">
+            <p>Vous avez reçu un nouveau message depuis le formulaire de contact de la bibliothèque.</p>
+            
+            <div class="info-box">
+                <div class="info-label">👤 Nom:</div>
+                <div>{{ name }}</div>
+            </div>
+            
+            <div class="info-box">
+                <div class="info-label">📧 Email:</div>
+                <div><a href="mailto:{{ email }}">{{ email }}</a></div>
+            </div>
+            
+            <div class="info-box">
+                <div class="info-label">🏷️ Sujet:</div>
+                <div>{{ subject }}</div>
+            </div>
+            
+            <div class="message-content">
+                <div class="info-label">💬 Message:</div>
+                <div style="margin-top: 10px;">{{ message|nl2br }}</div>
+            </div>
+        </div>
+        
+        <div class="email-footer">
+            <p>Ce message a été envoyé depuis le formulaire de contact de Bibliothèque</p>
+            <p>© {{ "now"|date("Y") }} Bibliothèque. Tous droits réservés.</p>
+        </div>
+    </div>
+</body>
+</html>

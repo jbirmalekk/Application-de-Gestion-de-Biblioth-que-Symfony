@@ -48,6 +48,12 @@ class Livre
     #[ORM\ManyToOne]
     private ?Categorie $categorie = null;
 
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    private ?bool $isPremium = false;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $description = null;
+
     /**
      * @var Collection<int, Avis>
      */
@@ -226,6 +232,28 @@ class Livre
     {
         $this->pdfPath = $pdfPath;
 
+        return $this;
+    }
+
+    public function isPremium(): ?bool
+    {
+        return $this->isPremium;
+    }
+
+    public function setIsPremium(bool $isPremium): static
+    {
+        $this->isPremium = $isPremium;
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
         return $this;
     }
 }

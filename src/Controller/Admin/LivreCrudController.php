@@ -16,6 +16,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -52,6 +54,8 @@ class LivreCrudController extends AbstractCrudController
             IntegerField::new('isbn'),
             MoneyField::new('prix')->setCurrency('TND'),
             DateField::new('datapub'),
+            BooleanField::new('isPremium', 'Premium'),
+            TextareaField::new('description')->hideOnIndex(),
             ImageField::new('image')
                 ->setBasePath('assets/img/books')
                 ->setUploadDir('public/assets/img/books')

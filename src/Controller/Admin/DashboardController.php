@@ -168,6 +168,8 @@ public function index(): Response
         yield MenuItem::linkToCrud('Commandes', 'fas fa-shopping-cart', Commande::class);
         yield MenuItem::section('Gestion des coupons');
         yield MenuItem::linkToCrud('Coupons', 'fas fa-ticket-alt', Coupon::class);
+        yield MenuItem::section('Abonnements Premium');
+        yield MenuItem::linkToCrud('Abonnements', 'fas fa-star', \App\Entity\Subscription::class);
         yield MenuItem::section('Gestion des avis et favoris');
         yield MenuItem::linkToCrud('Avis', 'fas fa-comments', Avis::class);
         yield MenuItem::linkToCrud('Favoris', 'fas fa-heart', Wishlist::class);

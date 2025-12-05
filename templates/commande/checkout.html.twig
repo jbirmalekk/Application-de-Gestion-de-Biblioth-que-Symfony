@@ -265,11 +265,49 @@
                     {{ form_errors(form.methodePaiement) }}
                 </div>
 
+                <div id="payment-section" style="display: none; margin-top: 1.5rem; padding: 1.5rem; background: #f9fafb; border-radius: 6px; border: 1px solid #e5e7eb;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem;">
+                        <i class="bi bi-shield-check" style="color: #10b981; font-size: 1.25rem;"></i>
+                        <span style="font-weight: 600; color: #374151;">Paiement sécurisé par Stripe</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+                            <i class="bi bi-credit-card"></i> Numéro de carte
+                        </label>
+                        <div id="card-number-element" style="padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 4px; background: white;"></div>
+                        <div id="card-number-errors" class="form-errors" style="margin-top: 0.5rem;"></div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+                        <div class="form-group">
+                            <label style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+                                <i class="bi bi-calendar3"></i> Date d'expiration
+                            </label>
+                            <div id="card-expiry-element" style="padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 4px; background: white;"></div>
+                            <div id="card-expiry-errors" class="form-errors" style="margin-top: 0.5rem;"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+                                <i class="bi bi-lock"></i> CVC
+                            </label>
+                            <div id="card-cvc-element" style="padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 4px; background: white;"></div>
+                            <div id="card-cvc-errors" class="form-errors" style="margin-top: 0.5rem;"></div>
+                        </div>
+                    </div>
+
+                    <div id="card-errors" class="form-errors" style="margin-top: 1rem;"></div>
+                </div>
+
                 <div style="display: flex; gap: 1rem; margin-top: 2rem;">
                     <a href="{{ path('panier_index') }}" class="back-link">
                         <i class="bi bi-arrow-left"></i> Retour au panier
                     </a>
-                    <button type="submit" class="checkout-btn" style="margin-left: auto;">
+                    <button type="button" id="proceed-payment-btn" class="checkout-btn" style="margin-left: auto; display: none;">
+                        <i class="bi bi-lock-fill"></i> Procéder au paiement
+                    </button>
+                    <button type="submit" id="confirm-order-btn" class="checkout-btn" style="margin-left: auto;">
                         <i class="bi bi-check-circle"></i> Confirmer la commande
                     </button>
                 </div>
@@ -339,5 +377,182 @@
         </div>
     </div>
 </div>
-{% endblock %}
 
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const methodePaiement = document.getElementById('checkout_address_methodePaiement');
+    const paymentSection = document.getElementById('payment-section');
+    const proceedBtn = document.getElementById('proceed-payment-btn');
+    const confirmBtn = document.getElementById('confirm-order-btn');
+    const stripe = Stripe('{{ stripe_public_key }}');
+
+    // Créer les éléments Stripe
+    const elements = stripe.elements();
+    
+    const cardNumberElement = elements.create('cardNumber', {
+        style: {
+            base: {
+                fontSize: '14px',
+                color: '#374151',
+                '::placeholder': {
+                    color: '#9ca3af',
+                },
+            },
+        },
+        placeholder: '1234 5678 9012 3456'
+    });
+
+    const cardExpiryElement = elements.create('cardExpiry', {
+        style: {
+            base: {
+                fontSize: '14px',
+                color: '#374151',
+                '::placeholder': {
+                    color: '#9ca3af',
+                },
+            },
+        },
+    });
+
+    const cardCvcElement = elements.create('cardCvc', {
+        style: {
+            base: {
+                fontSize: '14px',
+                color: '#374151',
+                '::placeholder': {
+                    color: '#9ca3af',
+                },
+            },
+        },
+        placeholder: '123'
+    });
+
+    let elementsReady = false;
+
+    // Afficher/masquer la section de paiement Stripe
+    methodePaiement.addEventListener('change', function() {
+        if (this.value === 'carte_bancaire') {
+            paymentSection.style.display = 'block';
+            proceedBtn.style.display = 'inline-flex';
+            confirmBtn.style.display = 'none';
+            
+            // Monter les éléments Stripe seulement une fois
+            if (!elementsReady) {
+                cardNumberElement.mount('#card-number-element');
+                cardExpiryElement.mount('#card-expiry-element');
+                cardCvcElement.mount('#card-cvc-element');
+                elementsReady = true;
+            }
+        } else {
+            paymentSection.style.display = 'none';
+            proceedBtn.style.display = 'none';
+            confirmBtn.style.display = 'inline-flex';
+        }
+    });
+
+    // Déclencher le changement au chargement si carte bancaire est sélectionné
+    if (methodePaiement.value === 'carte_bancaire') {
+        paymentSection.style.display = 'block';
+        proceedBtn.style.display = 'inline-flex';
+        confirmBtn.style.display = 'none';
+        
+        cardNumberElement.mount('#card-number-element');
+        cardExpiryElement.mount('#card-expiry-element');
+        cardCvcElement.mount('#card-cvc-element');
+        elementsReady = true;
+    }
+
+    // Gérer les erreurs de saisie
+    cardNumberElement.on('change', function(event) {
+        displayError('card-number-errors', event);
+    });
+
+    cardExpiryElement.on('change', function(event) {
+        displayError('card-expiry-errors', event);
+    });
+
+    cardCvcElement.on('change', function(event) {
+        displayError('card-cvc-errors', event);
+    });
+
+    function displayError(elementId, event) {
+        const displayError = document.getElementById(elementId);
+        if (event.error) {
+            displayError.textContent = event.error.message;
+        } else {
+            displayError.textContent = '';
+        }
+    }
+
+    // Gérer le paiement Stripe
+    proceedBtn.addEventListener('click', async function() {
+        // Valider le formulaire d'adresse d'abord
+        const form = document.querySelector('form[name="checkout_address"]');
+        const adresse = document.getElementById('checkout_address_adresseLivraison').value;
+        const codePostal = document.getElementById('checkout_address_codePostal').value;
+        const ville = document.getElementById('checkout_address_ville').value;
+
+        if (!adresse || !codePostal || !ville) {
+            alert('Veuillez remplir tous les champs d\'adresse obligatoires.');
+            return;
+        }
+
+        proceedBtn.disabled = true;
+        proceedBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Traitement...';
+
+        try {
+            // Créer le PaymentMethod avec Stripe
+            const {paymentMethod, error} = await stripe.createPaymentMethod({
+                type: 'card',
+                card: cardNumberElement,
+            });
+
+            if (error) {
+                throw new Error(error.message);
+            }
+
+            // Envoyer au backend pour créer la session et traiter le paiement
+            const response = await fetch('{{ path('stripe_commande_checkout') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    paymentMethodId: paymentMethod.id,
+                    adresse: adresse,
+                    codePostal: codePostal,
+                    ville: ville,
+                    pays: document.getElementById('checkout_address_pays').value
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+                throw new Error(data.error);
+            }
+
+            if (data.sessionId) {
+                // Rediriger vers Stripe Checkout
+                const result = await stripe.redirectToCheckout({
+                    sessionId: data.sessionId
+                });
+
+                if (result.error) {
+                    throw new Error(result.error.message);
+                }
+            } else {
+                // Redirection directe en cas de succès
+                window.location.href = data.redirectUrl || '{{ path('commande_mes_commandes') }}';
+            }
+        } catch (error) {
+            console.error('Erreur:', error);
+            document.getElementById('card-errors').textContent = error.message;
+            proceedBtn.disabled = false;
+            proceedBtn.innerHTML = '<i class="bi bi-lock-fill"></i> Procéder au paiement';
+        }
+    });
+});
+</script>
+{% endblock %}

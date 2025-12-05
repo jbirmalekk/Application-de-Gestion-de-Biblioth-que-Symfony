@@ -8,6 +8,7 @@ use App\Form\CheckoutAddressType;
 use App\Repository\CommandeRepository;
 use App\Service\CouponService;
 use App\Service\PanierService;
+use App\Service\StripeService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,6 +25,7 @@ final class CommandeController extends AbstractController
         private CommandeRepository $commandeRepository,
         private EntityManagerInterface $entityManager,
         private CouponService $couponService,
+        private StripeService $stripeService,
     ) {
     }
 
@@ -98,6 +100,7 @@ final class CommandeController extends AbstractController
             'form' => $form,
             'panier' => $panier,
             'cartSummary' => $cartSummary,
+            'stripe_public_key' => $this->stripeService->getPublicKey(),
         ]);
     }
 

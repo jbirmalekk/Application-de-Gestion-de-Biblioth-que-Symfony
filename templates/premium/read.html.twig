@@ -1,0 +1,240 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Lecture - {{ livre.titre }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        body {
+            background: #1a1a1a;
+            color: #e0e0e0;
+        }
+        
+        .reader-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .reader-header {
+            background: #2a2a2a;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .reader-content {
+            background: #ffffff;
+            color: #2a2a2a;
+            padding: 3rem;
+            border-radius: 10px;
+            min-height: 70vh;
+            line-height: 1.8;
+            font-size: 1.1rem;
+            font-family: 'Georgia', serif;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .reader-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                transparent,
+                transparent 29px,
+                rgba(0,0,0,0.02) 29px,
+                rgba(0,0,0,0.02) 30px
+            );
+            pointer-events: none;
+        }
+
+        .premium-badge {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #000;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .protection-notice {
+            background: #ff6b6b;
+            color: white;
+            padding: 0.75rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .reader-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #2a2a2a;
+            border-radius: 10px;
+        }
+
+        .btn-reader {
+            background: #4a90e2;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-reader:hover {
+            background: #357abd;
+            transform: translateY(-2px);
+        }
+
+        /* Protection contre la copie */
+        .reader-content {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Watermark */
+        .watermark {
+            position: fixed;
+            font-size: 3rem;
+            color: rgba(255, 255, 255, 0.05);
+            transform: rotate(-45deg);
+            pointer-events: none;
+            z-index: 1;
+            font-weight: bold;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="reader-container">
+    <!-- En-tête du lecteur -->
+    <div class="reader-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="mb-2">{{ livre.titre }}</h1>
+                <p class="text-muted mb-0">
+                    {% if livre.auteurs|length > 0 %}
+                        Par {{ livre.auteurs|map(a => a.nom ~ ' ' ~ a.prenom)|join(', ') }}
+                    {% endif %}
+                </p>
+            </div>
+            <div>
+                <span class="premium-badge">
+                    ⭐ PREMIUM
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notice de protection -->
+    <div class="protection-notice">
+        🔒 <strong>Contenu protégé</strong> - Ce livre est protégé par DRM. 
+        La copie, le téléchargement et le partage sont interdits.
+    </div>
+
+    <!-- Contenu du livre (lecture sécurisée) -->
+    <div class="reader-content">
+        <!-- Watermarks pour la protection -->
+        {% for i in 1..10 %}
+            <div class="watermark" style="top: {{ random(10, 90) }}%; left: {{ random(10, 90) }}%;">
+                {{ app.user.email }}
+            </div>
+        {% endfor %}
+
+        <h2 class="text-center mb-4">{{ livre.titre }}</h2>
+        
+        {% if livre.description %}
+            <div class="mb-4">
+                {{ livre.description|nl2br }}
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <h3>📖 Contenu du livre premium</h3>
+                <p class="lead">Ce livre est disponible en lecture en ligne.</p>
+                <p>Le contenu complet sera affiché ici avec protection DRM.</p>
+                <hr class="my-4">
+                <p class="text-muted">
+                    <i class="bi bi-info-circle"></i> 
+                    Dans une implémentation complète, le contenu du livre serait chargé dynamiquement
+                    avec des mesures de sécurité avancées (watermarking, chiffrement, limitation du temps de lecture, etc.)
+                </p>
+            </div>
+        {% endif %}
+
+        <!-- Exemple de contenu fictif -->
+        <div class="mt-5">
+            <h3>Chapitre 1</h3>
+            <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+            </p>
+            <p>
+                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
+                Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            </p>
+            <p class="text-muted text-center mt-5">
+                <i class="bi bi-three-dots"></i> Contenu sécurisé <i class="bi bi-three-dots"></i>
+            </p>
+        </div>
+    </div>
+
+    <!-- Contrôles du lecteur -->
+    <div class="reader-controls">
+        <a href="{{ path('app_livre_show', {id: livre.id}) }}" class="btn-reader">
+            <i class="bi bi-arrow-left"></i> Retour aux détails
+        </a>
+        
+        <div class="text-white">
+            <i class="bi bi-shield-check"></i> Lecture sécurisée active
+        </div>
+
+        <a href="{{ path('app_livre_index') }}" class="btn-reader">
+            <i class="bi bi-book"></i> Bibliothèque
+        </a>
+    </div>
+</div>
+
+<script>
+    // Protection contre le clic droit
+    document.addEventListener('contextmenu', event => event.preventDefault());
+    
+    // Protection contre les raccourcis clavier de copie
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && (e.key === 'c' || e.key === 's' || e.key === 'p' || e.key === 'u')) {
+            e.preventDefault();
+            alert('🔒 Cette action est désactivée pour protéger le contenu premium.');
+            return false;
+        }
+    });
+
+    // Protection contre les screenshots (limité mais dissuasif)
+    document.addEventListener('keyup', function(e) {
+        if (e.key === 'PrintScreen') {
+            alert('⚠️ Les captures d\'écran de contenu premium sont interdites.');
+        }
+    });
+
+    // Désactiver les outils de développement (F12)
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
+            e.preventDefault();
+            return false;
+        }
+    });
+</script>
+{% endblock %}

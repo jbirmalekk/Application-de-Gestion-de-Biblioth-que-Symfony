@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Knp\Component\Pager\PaginatorInterface;
 
 final class AcceuilController extends AbstractController
 {
@@ -19,6 +20,7 @@ final class AcceuilController extends AbstractController
         CategorieRepository $categorieRepository,
         EditeurRepository $editeurRepository,
         AuteurRepository $auteurRepository,
+        PaginatorInterface $paginator,
         Request $request
     ): Response
     {
@@ -32,7 +34,7 @@ final class AcceuilController extends AbstractController
         $sortBy = $request->query->get('sort_by', 'recent');
 
         // Récupérer les livres avec filtres
-        $featuredBooks = $livreRepository->searchWithFilters(
+        $featuredBooksQuery = $livreRepository->searchWithFiltersQuery(
             $search ?: null,
             $categorieId,
             $auteurId,
@@ -40,6 +42,13 @@ final class AcceuilController extends AbstractController
             $prixMin,
             $prixMax,
             $sortBy
+        );
+        
+        // Paginer les résultats
+        $featuredBooks = $paginator->paginate(
+            $featuredBooksQuery,
+            $request->query->getInt('page', 1),
+            12 // Nombre de livres par page
         );
         
         // Toutes les catégories

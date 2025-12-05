@@ -90,6 +90,22 @@
             box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
         }
 
+        .premium-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #000;
+            padding: 0.5rem 0.875rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
         .blog-content {
             padding: 1.5rem;
             flex: 1;
@@ -295,7 +311,12 @@
                                 {% else %}
                                     <img src="{{ asset('assets/img/book.jpg') }}" alt="{{ book.titre }}" loading="lazy">
                                 {% endif %}
-                                <div class="category-badge">
+                                {% if book.isPremium %}
+                                    <div class="premium-badge">
+                                        ⭐ PREMIUM
+                                    </div>
+                                {% endif %}
+                                <div class="category-badge" style="{% if book.qte == 0 %}background-color: #dc3545; border-color: #dc3545;{% endif %}">
                                     {% if book.qte > 0 %}
                                         Disponible
                                     {% else %}
@@ -334,12 +355,40 @@
                                            title="Voir">
                                             <i class="bi bi-eye" style="color:rgb(235, 37, 219);"></i>
                                         </a>
-                                        {% if is_granted('ROLE_USER') and book.qte > 0 %}
-                                            <a href="{{ path('panier_ajouter', {'id': book.id}) }}"
-                                               class="btn-card-action viewpanier"
-                                               title="Ajouter au panier">
-                                                <i class="bi bi-cart-plus" style="color: #2563eb;" ></i>
-                                            </a>
+                                        {% if is_granted('ROLE_USER') %}
+                                            {% if book.isPremium %}
+                                                {# Livre Premium #}
+                                                {% if app.user.hasActiveSubscription %}
+                                                    {# Utilisateur Premium - Peut lire ET acheter #}
+                                                    <a href="{{ path('premium_read', {'id': book.id}) }}"
+                                                       class="btn-card-action viewpanier"
+                                                       title="Lire maintenant"
+                                                       style="color: #ffd700;">
+                                                        <i class="bi bi-book-half"></i>
+                                                    </a>
+                                                    {% if book.qte > 0 %}
+                                                        <a href="{{ path('panier_ajouter', {'id': book.id}) }}"
+                                                           class="btn-card-action viewpanier"
+                                                           title="Ajouter au panier">
+                                                            <i class="bi bi-cart-plus"></i>
+                                                        </a>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <a href="{{ path('subscription_index') }}"
+                                                       class="btn-card-action viewpanier"
+                                                       title="S'abonner pour lire"
+                                                       style="color: #ffd700;">
+                                                        <i class="bi bi-star-fill"></i>
+                                                    </a>
+                                                {% endif %}
+                                            {% elseif book.qte > 0 %}
+                                                {# Livre Normal - Ajout au panier #}
+                                                <a href="{{ path('panier_ajouter', {'id': book.id}) }}"
+                                                   class="btn-card-action viewpanier"
+                                                   title="Ajouter au panier">
+                                                    <i class="bi bi-cart-plus" style="color: #2563eb;" ></i>
+                                                </a>
+                                            {% endif %}
                                         {% endif %}
                                         {% if is_granted('ROLE_ADMIN') %}
                                         <a href="{{ path('app_livre_edit', {'id': book.id}) }}" 

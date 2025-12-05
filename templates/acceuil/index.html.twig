@@ -166,16 +166,32 @@
         .category-badge {
             position: absolute;
             top: 12px;
-            right: 12px;
+            left: 12px;
             background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
             color: #fff;
+            padding: 0.35rem 0.6rem;
+            border-radius: 5px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+            box-shadow: 0 3px 10px rgba(37, 99, 235, 0.25);
+        }
+
+        .premium-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #000;
             padding: 0.5rem 0.875rem;
             border-radius: 6px;
             font-size: 0.75rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.3px;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+            z-index: 10;
         }
 
         .blog-content {
@@ -307,6 +323,52 @@
             font-size: 0.95rem;
         }
 
+        /* Pagination Styles */
+        .pagination-wrapper {
+            margin-top: 3rem;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .pagination .page-item .page-link {
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            color: #667eea;
+            background: white;
+            border: 1px solid #e0e0e0;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .pagination .page-item .page-link:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .pagination .page-item.active .page-link {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: #ccc;
+            background: #f8f9fa;
+            border-color: #e0e0e0;
+            cursor: not-allowed;
+        }
+
         @media (max-width: 768px) {
             .filters-sidebar {
                 position: static;
@@ -316,6 +378,11 @@
             .books-grid {
                 grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
                 gap: 1.25rem;
+            }
+
+            .pagination .page-item .page-link {
+                padding: 0.4rem 0.7rem;
+                font-size: 0.85rem;
             }
         }
     </style>
@@ -589,7 +656,12 @@
                                         {% else %}
                                             <img src="{{ asset('assets/img/book.jpg') }}" alt="{{ book.titre }}" loading="lazy">
                                         {% endif %}
-                                        <div class="category-badge">
+                                        
+                                        {% if book.isPremium %}
+                                            <div class="premium-badge">⭐ PREMIUM</div>
+                                        {% endif %}
+                                        
+                                        <div class="category-badge" style="{% if book.qte == 0 %}background-color: #dc3545; border-color: #dc3545;{% endif %}">
                                             {% if book.qte > 0 %}
                                                 Disponible
                                             {% else %}
@@ -630,13 +702,35 @@
                                                     <span>Détails</span>
                                                     <i class="bi bi-arrow-right"></i>
                                                 </a>
-                                                {% if is_granted('ROLE_USER') and book.qte > 0 %}
-                                                    <a href="{{ path('panier_ajouter', {'id': book.id}) }}"
-                                                       class="btn-read-more"
-                                                       style="background-color: #1f2937; border-color: #1f2937;"
-                                                       title="Ajouter au panier">
-                                                        <i class="bi bi-cart-plus"></i>
-                                                    </a>
+                                                {% if is_granted('ROLE_USER') %}
+                                                    {% if book.isPremium %}
+                                                        {# Livre Premium - Afficher panier seulement si abonné Premium #}
+                                                        {% if app.user.hasActiveSubscription %}
+                                                            {% if book.qte > 0 %}
+                                                                <a href="{{ path('panier_ajouter', {'id': book.id}) }}"
+                                                                   class="btn-read-more"
+                                                                   style="background-color: #1f2937; border-color: #1f2937;"
+                                                                   title="Ajouter au panier">
+                                                                    <i class="bi bi-cart-plus"></i>
+                                                                </a>
+                                                            {% endif %}
+                                                        {% else %}
+                                                            <a href="{{ path('subscription_index') }}"
+                                                               class="btn-read-more"
+                                                               style="background-color: #ffd700; border-color: #ffd700; color: #000;"
+                                                               title="S'abonner">
+                                                                <i class="bi bi-star-fill"></i>
+                                                            </a>
+                                                        {% endif %}
+                                                    {% elseif book.qte > 0 %}
+                                                        {# Livre Normal - Afficher panier directement #}
+                                                        <a href="{{ path('panier_ajouter', {'id': book.id}) }}"
+                                                           class="btn-read-more"
+                                                           style="background-color: #1f2937; border-color: #1f2937;"
+                                                           title="Ajouter au panier">
+                                                            <i class="bi bi-cart-plus"></i>
+                                                        </a>
+                                                    {% endif %}
                                                 {% endif %}
                                             </div>
                                         </div>
@@ -661,6 +755,11 @@
                             </div>
                         </div>
                     {% endif %}
+
+                    {# Pagination #}
+                    <div class="pagination-wrapper" style="margin-top: 3rem; display: flex; justify-content: center;">
+                        {{ knp_pagination_render(featuredBooks) }}
+                    </div>
                 </div>
             </div>
         </div>

@@ -72,9 +72,8 @@ class CheckoutAddressType extends AbstractType
                 'label' => 'Moyen de paiement',
                 'required' => true,
                 'choices' => [
-                    'Carte bancaire' => 'carte',
-                    'PayPal' => 'paypal',
-                    'Virement bancaire' => 'virement',
+                    'Carte bancaire' => 'carte_bancaire',
+                    
                     'Paiement à domicile' => 'domicile',
                 ],
                 'placeholder' => 'Sélectionner un moyen de paiement',

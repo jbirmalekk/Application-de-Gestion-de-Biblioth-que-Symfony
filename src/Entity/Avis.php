@@ -49,7 +49,7 @@ class Avis
     #[ORM\JoinColumn(nullable: false)]
     private ?Livre $livre = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'avis')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 

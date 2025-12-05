@@ -85,6 +85,12 @@ final class PanierController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
+        // Vérifier si le livre est premium et si l'utilisateur a un abonnement
+        if ($livre->isPremium() && !$user->hasActiveSubscription()) {
+            $this->addFlash('error', 'Ce livre est premium. Vous devez avoir un abonnement actif pour y accéder.');
+            return $this->redirectToRoute('subscription_index');
+        }
+
         // Vérifier le token CSRF
         $token = $request->get('_token');
         if (!$this->isCsrfTokenValid('panier-add-' . $livre->getId(), $token)) {

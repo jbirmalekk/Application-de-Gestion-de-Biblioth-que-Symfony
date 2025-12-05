@@ -5,71 +5,193 @@
 {% block stylesheets %}
     {{ parent() }}
     <style>
+        body {
+            background: linear-gradient(180deg, #ffffff 0%, #f0f0f0 100%);
+        }
+
         .admin-orders-container {
-            max-width: 1100px;
-            margin: 2rem auto;
+            max-width: 1200px;
+            margin: 3rem auto;
             padding: 0 1.5rem;
         }
 
         .admin-orders-header {
-            margin-bottom: 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            margin-bottom: 2.5rem;
+            text-align: center;
         }
 
         .admin-orders-header h1 {
-            font-size: 1.5rem;
-            font-weight: 600;
+            font-size: 3rem;
+            font-weight: 700;
             margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        table.admin-orders-table {
-            width: 100%;
-            border-collapse: collapse;
+        .admin-orders-header p {
+            color: #6b7280;
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+        }
+
+        .orders-list {
             background: #ffffff;
-            border-radius: 6px;
+            border-radius: 20px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.08);
             overflow: hidden;
-            border: 1px solid #e5e7eb;
-            font-size: 0.875rem;
         }
 
-        table.admin-orders-table th,
-        table.admin-orders-table td {
-            padding: 0.6rem 0.75rem;
-            border-bottom: 1px solid #e5e7eb;
-            text-align: left;
+        .order-row {
+            display: grid;
+            grid-template-columns: 0.8fr 2fr 1.5fr 1.2fr 1.5fr 2fr;
+            padding: 1.25rem 1.75rem;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.95rem;
+            align-items: center;
+            transition: all 0.3s ease;
         }
 
-        table.admin-orders-table th {
-            background: #f9fafb;
+        .order-row.header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             font-weight: 600;
-            color: #4b5563;
+            color: #ffffff;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
         }
 
-        .order-status-badge {
+        .order-row:not(.header):hover {
+            background: rgba(102, 126, 234, 0.03);
+            transform: translateX(5px);
+        }
+
+        .order-row:last-child {
+            border-bottom: none;
+        }
+
+        .order-status {
             display: inline-flex;
             align-items: center;
-            gap: 0.35rem;
-            padding: 0.25rem 0.6rem;
-            border-radius: 999px;
-            font-size: 0.75rem;
+            gap: 0.4rem;
+            padding: 0.4rem 1rem;
+            border-radius: 25px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
 
-        .status-en_attente { background-color: #fef3c7; color: #92400e; }
-        .status-validee   { background-color: #dcfce7; color: #166534; }
-        .status-expediee  { background-color: #e0f2fe; color: #075985; }
-        .status-livree    { background-color: #e5e7eb; color: #374151; }
-        .status-annulee   { background-color: #fee2e2; color: #b91c1c; }
+        .status-en_attente {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: #92400e;
+        }
+
+        .status-validee {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            color: #166534;
+        }
+
+        .status-expediee {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            color: #075985;
+        }
+
+        .status-livree {
+            background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+            color: #374151;
+        }
+
+        .status-annulee {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #b91c1c;
+        }
+
+        .status-form {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
 
         .status-form select {
-            font-size: 0.75rem;
-            padding: 0.25rem 0.4rem;
+            padding: 0.4rem 0.8rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            background: #ffffff;
+            transition: all 0.3s ease;
+        }
+
+        .status-form select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         .status-form button {
-            font-size: 0.75rem;
-            padding: 0.25rem 0.5rem;
+            padding: 0.4rem 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .status-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #d1d5db;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            color: #6b7280;
+            font-size: 1.25rem;
+            margin: 0;
+        }
+
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            border: none;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            color: #166534;
+        }
+
+        .alert-danger {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #b91c1c;
+        }
+
+        @media (max-width: 768px) {
+            .order-row {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .order-row.header {
+                display: none;
+            }
         }
     </style>
 {% endblock %}
@@ -77,71 +199,73 @@
 {% block body %}
 <div class="admin-orders-container">
     <div class="admin-orders-header">
-        <h1>Gestion des commandes</h1>
+        <h1><i class="bi bi-clipboard-check"></i> Gestion des commandes</h1>
+        <p>Administration et suivi de toutes les commandes</p>
     </div>
 
     {% for message in app.flashes('success') %}
-        <div class="alert alert-success">{{ message }}</div>
+        <div class="alert alert-success">
+            <i class="bi bi-check-circle"></i> {{ message }}
+        </div>
     {% endfor %}
     {% for message in app.flashes('error') %}
-        <div class="alert alert-danger">{{ message }}</div>
+        <div class="alert alert-danger">
+            <i class="bi bi-exclamation-triangle"></i> {{ message }}
+        </div>
     {% endfor %}
 
     {% if commandes is not empty %}
-        <table class="admin-orders-table">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Utilisateur</th>
-                    <th>Date</th>
-                    <th>Total</th>
-                    <th>Statut</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for commande in commandes %}
-                    <tr>
-                        <td>#{{ commande.id }}</td>
-                        <td>{{ commande.user.userIdentifier }}</td>
-                        <td>{{ commande.createdAt ? commande.createdAt|date('d/m/Y H:i') : '' }}</td>
-                        <td>{{ commande.total|number_format(2, ',', ' ') }} €</td>
-                        <td>
-                            <span class="order-status-badge status-{{ commande.statut }}">
-                                {{ commande.statut|replace({
-                                    'en_attente': 'En attente',
-                                    'validee': 'Validée',
-                                    'expediee': 'Expédiée',
-                                    'livree': 'Livrée',
-                                    'annulee': 'Annulée'
-                                }) }}
-                            </span>
-                        </td>
-                        <td>
-                            <form method="POST"
-                                  action="{{ path('admin_commandes_change_statut', {'id': commande.id}) }}"
-                                  class="status-form d-inline-flex align-items-center gap-1">
-                                <input type="hidden" name="_token" value="{{ csrf_token('change_statut_' ~ commande.id) }}">
-                                <select name="statut" class="form-select form-select-sm">
-                                    <option value="en_attente"  {{ commande.statut == 'en_attente' ? 'selected' : '' }}>En attente</option>
-                                    <option value="validee"     {{ commande.statut == 'validee' ? 'selected' : '' }}>Validée</option>
-                                    <option value="expediee"    {{ commande.statut == 'expediee' ? 'selected' : '' }}>Expédiée</option>
-                                    <option value="livree"      {{ commande.statut == 'livree' ? 'selected' : '' }}>Livrée</option>
-                                    <option value="annulee"     {{ commande.statut == 'annulee' ? 'selected' : '' }}>Annulée</option>
-                                </select>
-                                <button type="submit" class="btn btn-sm btn-outline-primary">OK</button>
-                            </form>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="orders-list">
+            <div class="order-row header">
+                <div>#</div>
+                <div>Utilisateur</div>
+                <div>Date</div>
+                <div>Total</div>
+                <div>Statut</div>
+                <div>Actions</div>
+            </div>
+            {% for commande in commandes %}
+                <div class="order-row">
+                    <div><strong>#{{ commande.id }}</strong></div>
+                    <div><i class="bi bi-person-circle"></i> {{ commande.user.userIdentifier }}</div>
+                    <div><i class="bi bi-calendar3"></i> {{ commande.createdAt ? commande.createdAt|date('d/m/Y H:i') : 'N/A' }}</div>
+                    <div><strong>{{ commande.total|number_format(2, ',', ' ') }} €</strong></div>
+                    <div>
+                        <span class="order-status status-{{ commande.statut }}">
+                            {{ commande.statut|replace({
+                                'en_attente': '⏳ En attente',
+                                'validee': '✓ Validée',
+                                'expediee': '📦 Expédiée',
+                                'livree': '✅ Livrée',
+                                'annulee': '❌ Annulée'
+                            }) }}
+                        </span>
+                    </div>
+                    <div>
+                        <form method="POST"
+                              action="{{ path('admin_commandes_change_statut', {'id': commande.id}) }}"
+                              class="status-form">
+                            <input type="hidden" name="_token" value="{{ csrf_token('change_statut_' ~ commande.id) }}">
+                            <select name="statut">
+                                <option value="en_attente" {{ commande.statut == 'en_attente' ? 'selected' : '' }}>En attente</option>
+                                <option value="validee" {{ commande.statut == 'validee' ? 'selected' : '' }}>Validée</option>
+                                <option value="expediee" {{ commande.statut == 'expediee' ? 'selected' : '' }}>Expédiée</option>
+                                <option value="livree" {{ commande.statut == 'livree' ? 'selected' : '' }}>Livrée</option>
+                                <option value="annulee" {{ commande.statut == 'annulee' ? 'selected' : '' }}>Annulée</option>
+                            </select>
+                            <button type="submit">
+                                <i class="bi bi-check2"></i> OK
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
     {% else %}
-        <div class="alert alert-info">
-            Aucune commande enregistrée pour le moment.
+        <div class="empty-state">
+            <i class="bi bi-inbox"></i>
+            <h3>Aucune commande pour le moment</h3>
         </div>
     {% endif %}
 </div>
 {% endblock %}
-
-
